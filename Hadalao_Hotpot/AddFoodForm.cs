@@ -1,0 +1,126 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.SqlClient;
+using System.Drawing;
+using System.Linq;
+using System.Net.NetworkInformation;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Hadalao_Hotpot
+{
+    public partial class AddAndEditFoodForm : Form
+    {
+
+        string connectionSTR = @"Data Source=DESKTOP-6QPUDLE;Initial Catalog=QUANLYLAU;Integrated Security=True";
+        SqlConnection conn = null;
+        int close = 0;
+
+        public AddAndEditFoodForm()
+        {
+            InitializeComponent();
+        }
+
+        public void setTxbId()
+        {
+            nbudFoodId.ReadOnly = true;
+            nbudFoodId.Increment = 0;
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            
+            DialogResult rel = MessageBox.Show("Bạn có chắc chắn muốn thoát ? ", "Hỏi Thoát", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if(rel == DialogResult.Yes)
+            {
+                close = 1;
+                this.Close();
+            }
+        }
+
+        private void AddAndEditFoodForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (close == 0)
+            {
+                DialogResult rel = MessageBox.Show("Bạn có chắc chắn muốn thoát ? ", "Hỏi Thoát", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (rel == DialogResult.No)
+                    e.Cancel = true;
+            }
+        }
+
+        void changeorAddValue(string query)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(txbFoodName.Text) || string.IsNullOrEmpty(cbbTT.Text))
+                {
+                    MessageBox.Show("Dữ liệu không được để trống !", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                SqlCommand command = new SqlCommand(query, conn);
+                if (this.Text == "Chỉnh Sửa")
+                {
+                    command.Parameters.AddWithValue("@food_id", nbudFoodId.Value);
+                }
+                command.Parameters.AddWithValue("@food_name", txbFoodName.Text);
+                command.Parameters.AddWithValue("@food_price", nbudPrice.Value);
+                command.Parameters.AddWithValue("@food_availability", cbbTT.Text);
+                command.ExecuteNonQuery();
+                this.Close();
+            }
+            catch(SqlException ex)
+            {
+                MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch(FormatException ex)
+            {
+                MessageBox.Show("Lỗi kiểu dữ liệu : " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnAccept_Click(object sender, EventArgs e)
+        {
+            string query;
+
+            if(this.Text == "Thêm")
+            {
+                query = "INSERT INTO FOOD VALUES (@food_name,@food_price,@food_availability)";
+            }
+            else
+            {
+                query = "UPDATE FOOD SET food_name = @food_name, food_price = @food_price , food_availability = @food_availability WHERE food_id = @food_id";
+                string queryCheck = "Select Count(*) From FOOD Where food_id = @food_id";
+                SqlCommand cmdc = new SqlCommand(queryCheck, conn);
+                cmdc.Parameters.AddWithValue("food_id", nbudFoodId.Value);
+
+                var existingRecords = (int)cmdc.ExecuteScalar();
+                if(existingRecords == 0)
+                {
+                    MessageBox.Show("Mã thức ăn không hợp lệ !", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+            if(!string.IsNullOrEmpty(query))
+                changeorAddValue(query);
+        }
+
+        private void AddAndEditFoodForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            conn.Close();
+        }
+
+        private void AddAndEditFoodForm_Load(object sender, EventArgs e)
+        {
+            conn = new SqlConnection(connectionSTR);
+            conn.Open();
+        }
+
+        private void txbFoodName_TextChanged(object sender, EventArgs e)
+        {
+            
+        }
+    }
+}
