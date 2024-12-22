@@ -41,6 +41,7 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.SearchTb = new System.Windows.Forms.TextBox();
             this.SearchBtn = new System.Windows.Forms.Button();
+            this.availableFoodBtn = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tcAdmin.SuspendLayout();
             this.tpFood.SuspendLayout();
@@ -79,7 +80,7 @@
             this.tpFood.Controls.Add(this.panel2);
             this.tpFood.Location = new System.Drawing.Point(4, 22);
             this.tpFood.Name = "tpFood";
-            this.tpFood.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
+            this.tpFood.Padding = new System.Windows.Forms.Padding(3);
             this.tpFood.Size = new System.Drawing.Size(763, 440);
             this.tpFood.TabIndex = 0;
             this.tpFood.Text = "Thức ăn";
@@ -111,6 +112,7 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.availableFoodBtn);
             this.panel3.Controls.Add(this.loadbtn);
             this.panel3.Controls.Add(this.DeleteFoodBtn);
             this.panel3.Controls.Add(this.EditFoodBtn);
@@ -128,7 +130,7 @@
             this.loadbtn.BackColor = System.Drawing.Color.Peru;
             this.loadbtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.loadbtn.ForeColor = System.Drawing.Color.White;
-            this.loadbtn.Location = new System.Drawing.Point(609, 3);
+            this.loadbtn.Location = new System.Drawing.Point(603, 3);
             this.loadbtn.Name = "loadbtn";
             this.loadbtn.Size = new System.Drawing.Size(136, 30);
             this.loadbtn.TabIndex = 3;
@@ -144,7 +146,7 @@
             this.DeleteFoodBtn.BackColor = System.Drawing.Color.Tomato;
             this.DeleteFoodBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.DeleteFoodBtn.ForeColor = System.Drawing.Color.White;
-            this.DeleteFoodBtn.Location = new System.Drawing.Point(413, 3);
+            this.DeleteFoodBtn.Location = new System.Drawing.Point(303, 3);
             this.DeleteFoodBtn.Name = "DeleteFoodBtn";
             this.DeleteFoodBtn.Size = new System.Drawing.Size(136, 30);
             this.DeleteFoodBtn.TabIndex = 2;
@@ -160,7 +162,7 @@
             this.EditFoodBtn.BackColor = System.Drawing.Color.MediumAquamarine;
             this.EditFoodBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.EditFoodBtn.ForeColor = System.Drawing.Color.White;
-            this.EditFoodBtn.Location = new System.Drawing.Point(211, 3);
+            this.EditFoodBtn.Location = new System.Drawing.Point(153, 3);
             this.EditFoodBtn.Name = "EditFoodBtn";
             this.EditFoodBtn.Size = new System.Drawing.Size(136, 30);
             this.EditFoodBtn.TabIndex = 1;
@@ -217,6 +219,22 @@
             this.SearchBtn.UseVisualStyleBackColor = true;
             this.SearchBtn.Click += new System.EventHandler(this.SearchBtn_Click);
             // 
+            // availableFoodBtn
+            // 
+            this.availableFoodBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.availableFoodBtn.BackColor = System.Drawing.Color.Teal;
+            this.availableFoodBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.availableFoodBtn.ForeColor = System.Drawing.Color.White;
+            this.availableFoodBtn.Location = new System.Drawing.Point(453, 3);
+            this.availableFoodBtn.Name = "availableFoodBtn";
+            this.availableFoodBtn.Size = new System.Drawing.Size(136, 30);
+            this.availableFoodBtn.TabIndex = 4;
+            this.availableFoodBtn.Text = "Các Món Còn";
+            this.availableFoodBtn.UseVisualStyleBackColor = false;
+            this.availableFoodBtn.Click += new System.EventHandler(this.availableFoodBtn_Click);
+            // 
             // ManageFoodForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -256,5 +274,6 @@
         private System.Windows.Forms.Button SearchBtn;
         private System.Windows.Forms.DataGridView dtgvFood;
         private System.Windows.Forms.Button loadbtn;
+        private System.Windows.Forms.Button availableFoodBtn;
     }
 }

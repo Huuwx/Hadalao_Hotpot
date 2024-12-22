@@ -26,8 +26,24 @@ namespace Hadalao_Hotpot
             InitializeComponent();
         }
 
-        public void PrintFoodList(string query = "select food_id as [Mã Thức Ăn], food_name as [Tên Món], food_price as [Giá], food_availability as [Tình Trạng] from FOOD")
+        public void PrintFoodList()
         {
+            string query = "SELECT * FROM vw_FoodDetails";
+
+            SqlCommand command = new SqlCommand(query, conn);
+
+            DataTable data = new DataTable();
+
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+            adapter.Fill(data);
+
+            dtgvFood.DataSource = data;
+        }
+
+        public void PrintAvailableFoodList()
+        {
+            string query = "SELECT * FROM vw_AvailableFood";
 
             SqlCommand command = new SqlCommand(query, conn);
 
@@ -73,11 +89,12 @@ namespace Hadalao_Hotpot
                 Console.WriteLine( food_idSTR );
                 try
                 {
-                    string querydel = @"DELETE FROM FOOD WHERE @food_id = food_id";
+                    string querydel = @"EXEC pr_DeleteFoodById @food_id";
 
                     SqlCommand cm = new SqlCommand(querydel, conn);
                     cm.Parameters.AddWithValue("@food_id", food_idSTR);
                     cm.ExecuteNonQuery();
+                    MessageBox.Show("Xóa món ăn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     dtgvFood.Rows.RemoveAt(i);
                 }
                 catch (SqlException ex)
@@ -107,27 +124,9 @@ namespace Hadalao_Hotpot
         {
             try
             {
-                string query = "select food_id as [Mã Thức Ăn], food_name as [Tên Món], food_price as [Giá], food_availability as [Tình Trạng] from FOOD WHERE food_id = @food_id OR food_name = @food_name OR food_price = @food_price OR food_availability = @food_availability";
+                string query = @"EXEC pr_SearchByName @food_name";
                 SqlCommand command = new SqlCommand(query, conn);
-
-                if (int.TryParse(SearchTb.Text, out int resultId))
-                {
-                    command.Parameters.AddWithValue("@food_id", resultId);
-                }
-                else
-                {
-                    command.Parameters.AddWithValue("@food_id", -1000);
-                }
                 command.Parameters.AddWithValue("@food_name", SearchTb.Text);
-                if (double.TryParse(SearchTb.Text, out double resultPrice))
-                {
-                    command.Parameters.AddWithValue("@food_price", resultPrice);
-                }
-                else
-                {
-                    command.Parameters.AddWithValue("@food_price", -1000);
-                }
-                command.Parameters.AddWithValue("@food_availability", SearchTb.Text);
 
                 DataTable data = new DataTable();
 
@@ -161,6 +160,11 @@ namespace Hadalao_Hotpot
             {
                 MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void availableFoodBtn_Click(object sender, EventArgs e)
+        {
+            PrintAvailableFoodList();
         }
     }
 }
