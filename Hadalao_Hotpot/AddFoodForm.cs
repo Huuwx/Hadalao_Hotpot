@@ -15,19 +15,14 @@ namespace Hadalao_Hotpot
     public partial class AddAndEditFoodForm : Form
     {
 
-        string connectionSTR = @"Data Source=DESKTOP-6QPUDLE;Initial Catalog=QUANLYLAU;Integrated Security=True";
+        string connectionSTR = @"Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;Integrated Security=True";
         SqlConnection conn = null;
         int close = 0;
+        int id;
 
         public AddAndEditFoodForm()
         {
             InitializeComponent();
-        }
-
-        public void setTxbId()
-        {
-            nbudFoodId.ReadOnly = true;
-            nbudFoodId.Increment = 0;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
@@ -63,7 +58,7 @@ namespace Hadalao_Hotpot
                 SqlCommand command = new SqlCommand(query, conn);
                 if (this.Text == "Chỉnh Sửa")
                 {
-                    command.Parameters.AddWithValue("@food_id", nbudFoodId.Value);
+                    command.Parameters.AddWithValue("@food_id", id); // Đảm bảo id được truyền chính xác từ SetFoodDetails
                 }
                 command.Parameters.AddWithValue("@food_name", txbFoodName.Text);
                 command.Parameters.AddWithValue("@food_price", nbudPrice.Value);
@@ -73,7 +68,7 @@ namespace Hadalao_Hotpot
             }
             catch(SqlException ex)
             {
-                MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch(FormatException ex)
             {
@@ -94,7 +89,7 @@ namespace Hadalao_Hotpot
                 query = "UPDATE FOOD SET food_name = @food_name, food_price = @food_price , food_availability = @food_availability WHERE food_id = @food_id";
                 string queryCheck = "Select Count(*) From FOOD Where food_id = @food_id";
                 SqlCommand cmdc = new SqlCommand(queryCheck, conn);
-                cmdc.Parameters.AddWithValue("food_id", nbudFoodId.Value);
+                cmdc.Parameters.AddWithValue("@food_id", id);
 
                 var existingRecords = (int)cmdc.ExecuteScalar();
                 if(existingRecords == 0)
@@ -121,6 +116,14 @@ namespace Hadalao_Hotpot
         private void txbFoodName_TextChanged(object sender, EventArgs e)
         {
             
+        }
+
+        public void SetFoodDetails(int foodId, string foodName, decimal foodPrice, string foodAvailability)
+        {
+            id = foodId;
+            txbFoodName.Text = foodName;
+            nbudPrice.Value = foodPrice;
+            cbbTT.Text = foodAvailability;
         }
     }
 }

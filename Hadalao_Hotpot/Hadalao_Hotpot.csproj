@@ -114,6 +114,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QUANLYLAUDataSet1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>QUANLYLAUDataSet1.xsd</DependentUpon>
+    </Compile>
     <Compile Include="QuanlyNhanvien.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -185,6 +190,17 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="QUANLYLAUDataSet1.xsc">
+      <DependentUpon>QUANLYLAUDataSet1.xsd</DependentUpon>
+    </None>
+    <None Include="QUANLYLAUDataSet1.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>QUANLYLAUDataSet1.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="QUANLYLAUDataSet1.xss">
+      <DependentUpon>QUANLYLAUDataSet1.xsd</DependentUpon>
+    </None>
     <None Include="QuanlyNhanvienDataSet.xsc">
       <DependentUpon>QuanlyNhanvienDataSet.xsd</DependentUpon>
     </None>

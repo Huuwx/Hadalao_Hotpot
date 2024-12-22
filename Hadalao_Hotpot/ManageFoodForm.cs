@@ -10,13 +10,15 @@ using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.Collections;
 using System.Diagnostics;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Hadalao_Hotpot
 {
     public partial class ManageFoodForm : Form
     {
 
-        string connectionSTR = @"Data Source=DESKTOP-6QPUDLE;Initial Catalog=QUANLYLAU;Integrated Security=True";
+        string connectionSTR = @"Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;Integrated Security=True";
         SqlConnection conn = null;
 
         public ManageFoodForm()
@@ -42,41 +44,50 @@ namespace Hadalao_Hotpot
         {
             AddAndEditFoodForm ae = new AddAndEditFoodForm();
             ae.Text = "Thêm";
-            ae.setTxbId();
             ae.ShowDialog();
             PrintFoodList();
         }
 
         private void EditFoodBtn_Click(object sender, EventArgs e)
         {
+            int i = dtgvFood.CurrentRow.Index;
             AddAndEditFoodForm ae = new AddAndEditFoodForm();
             ae.Text = "Chỉnh Sửa";
+            ae.SetFoodDetails(
+                    Convert.ToInt32(dtgvFood.Rows[i].Cells[0].Value),
+                    dtgvFood.Rows[i].Cells[1].Value.ToString(),
+                    Convert.ToDecimal(dtgvFood.Rows[i].Cells[2].Value),
+                    dtgvFood.Rows[i].Cells[3].Value.ToString()
+                );
             ae.ShowDialog();
             PrintFoodList();
         }
 
         private void DeleteFoodBtn_Click(object sender, EventArgs e)
         {
-            if(dtgvFood.SelectedRows.Count > 0)
+            if (dtgvFood.SelectedRows.Count >= 0)
             {
-                foreach(DataGridViewRow row in dtgvFood.SelectedRows)
+                int i;
+                i = dtgvFood.CurrentRow.Index;
+                string food_idSTR = dtgvFood.Rows[i].Cells[0].Value.ToString();
+                Console.WriteLine( food_idSTR );
+                try
                 {
-                    try
-                    {
-                        string food_idSTR = row.Cells[0].Value.ToString();
+                    string querydel = @"DELETE FROM FOOD WHERE @food_id = food_id";
 
-                        string querydel = @"DELETE FROM FOOD WHERE @food_id = food_id";
-
-                        SqlCommand cm = new SqlCommand(querydel, conn);
-                        cm.Parameters.AddWithValue("@food_id", food_idSTR);
-                        cm.ExecuteNonQuery();
-                        dtgvFood.Rows.Remove(row);
-                    }
-                    catch(SqlException ex)
-                    {
-                        MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    SqlCommand cm = new SqlCommand(querydel, conn);
+                    cm.Parameters.AddWithValue("@food_id", food_idSTR);
+                    cm.ExecuteNonQuery();
+                    dtgvFood.Rows.RemoveAt(i);
                 }
+                catch (SqlException ex)
+                {
+                    MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Vui lòng chọn một hàng để xóa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -126,7 +137,7 @@ namespace Hadalao_Hotpot
 
                 dtgvFood.DataSource = data;
             }
-            catch(SqlException ex)
+            catch (SqlException ex)
             {
                 MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -141,12 +152,12 @@ namespace Hadalao_Hotpot
         {
             try
             {
-                if(dtgvFood.SelectedRows.Count < 0) 
+                if (dtgvFood.SelectedRows.Count < 0)
                 {
                     throw new Exception("Bạn đang chọn hàng rỗng");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

@@ -23,7 +23,7 @@ namespace Hadalao_Hotpot
         }
         SqlConnection connection;
         SqlCommand command;
-        string str = @"Data Source=DESKTOP-6QPUDLE;Initial Catalog=QUANLYLAU;Integrated Security=True";
+        string str = @"Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;Integrated Security=True";
         SqlDataAdapter adapter = new SqlDataAdapter();
         DataTable table = new DataTable();
         
@@ -83,7 +83,7 @@ namespace Hadalao_Hotpot
 
                     
                     SqlCommand command = connection.CreateCommand();
-                    command.CommandText = "SELECT COUNT(*) FROM NVQUAN WHERE emp_id = @empID";
+                    command.CommandText = "SELECT COUNT(*) FROM NVQUAN WHERE MANV = @empID";
                     command.Parameters.AddWithValue("@empID", textMNV.Text.Trim());
                     int count = (int)command.ExecuteScalar();
 
@@ -115,7 +115,7 @@ namespace Hadalao_Hotpot
         private void loaddata()
         {
             command = connection.CreateCommand();
-            command.CommandText = "select emp_id as [Mã nhân viên], emp_name as [Họ và tên], emp_username as [Tài khoản], emp_password as [Mật khẩu], emp_gender as [Giới tính] , emp_birth as [Ngày sinh] , emp_phone as [SĐT] , emp_address as [Địa chỉ] , emp_email as [Email] , emp_status as [Tình trạng] from NVQUAN ";
+            command.CommandText = "select MANV as [Mã nhân viên], TENNV as [Họ và tên], username as [Tài khoản], passwordd as [Mật khẩu], NAMSINH as [Ngày sinh] , SDT as [SĐT] , TINHTRANG as [Tình trạng] from NVQUAN ";
             adapter.SelectCommand = command;
             table.Clear();
             adapter.Fill(table);
@@ -271,7 +271,7 @@ namespace Hadalao_Hotpot
                 else
                 {
                     command = connection.CreateCommand();
-                    command.CommandText = "delete from NVQUAN where emp_id = ('" + textMNV.Text + "')";
+                    command.CommandText = "delete from NVQUAN where MANV = ('" + textMNV.Text + "')";
                     command.ExecuteNonQuery();
                     loaddata();
 
