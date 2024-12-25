@@ -19,10 +19,12 @@ CREATE TABLE food
 );
 
 CREATE TABLE BAN
-(MABAN VARCHAR(20) NOT NULL PRIMARY KEY,
+(MABAN nvarchar(20) PRIMARY KEY,
 TENBAN VARCHAR(20) NOT NULL,
 TTBAN VARCHAR(20),
 )
+
+insert into BAN values('Bàn 1', 'ban 1', 'ok');
 
 CREATE TABLE KHACH
 (MAKH VARCHAR(20) NOT NULL PRIMARY KEY,
@@ -31,16 +33,27 @@ SDT VARCHAR(10) NOT NULL,
 TUOI INT,
 )
 
-CREATE TABLE BILL
-(MAHD VARCHAR(20) NOT NULL PRIMARY KEY,
-TGTT DATE,
-TTBILL VARCHAR(10) NOT NULL,
+create TABLE bill
+(MAHD int identity(1, 1) PRIMARY KEY,
+payment_time date,
+table_code nvarchar(20) FOREIGN KEY REFERENCES BAN(MABAN),
+customer_name nvarchar(50),
+Total decimal
 )
 
-CREATE TABLE BILLINFO
-(MAHD VARCHAR(20) NOT NULL FOREIGN KEY REFERENCES BILL(MAHD),
-MABAN VARCHAR(20) NOT NULL FOREIGN KEY REFERENCES BAN(MABAN),
-MAKH VARCHAR(20) NOT NULL FOREIGN KEY REFERENCES KHACH(MAKH),
+drop table BAN
+
+drop table bill
+
+drop table bill_info
+
+
+INSERT INTO bill (payment_time, table_code, customer_name,total) VALUES (GETDATE(), @tableName, @emp_id, @customerName, @total);SELECT SCOPE_IDENTITY() AS LastInsertedID;
+
+CREATE TABLE bill_info
+(bill_id int FOREIGN KEY REFERENCES BILL(MAHD),
+food_name nvarchar(50),
+quantity int,
 )
 
 INSERT INTO food (food_name, food_price, food_availability)
@@ -54,6 +67,8 @@ VALUES
 ('Sushi', 18, 'Available'),	
 ('Fries', 3, 'Available'),
 ('Ice Cream', 4, 'Available');
+
+select * from bill_info
 
 --CHU MẠNH HỮU - 2251172368
 
