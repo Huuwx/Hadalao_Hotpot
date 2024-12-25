@@ -22,7 +22,7 @@ namespace Hadalao_Hotpot
         public int datban = 0;
         public int thanhtoan = 0;
 
-        string chuoiketnoi = "Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
+        string chuoiketnoi = "Data Source=DESKTOP-0V5FIJG;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
         SqlConnection connection = null;
         SqlDataAdapter adapter = new SqlDataAdapter();
         SqlCommand cmd = new SqlCommand();
@@ -245,10 +245,9 @@ namespace Hadalao_Hotpot
             textBox_total.Text = total.ToString();
             button_thanhtoan.Enabled = false;
                 cmd = connection.CreateCommand();
-                cmd.CommandText = "INSERT INTO bill (payment_time, table_code, emp_id, customer_name,total) VALUES (GETDATE(), @tableName, @emp_id, @customerName, @total);SELECT SCOPE_IDENTITY() AS LastInsertedID;";
+                cmd.CommandText = "INSERT INTO bill (payment_time, table_code, customer_name,total) VALUES (GETDATE(), @tableName, @customerName, @total);SELECT SCOPE_IDENTITY() AS LastInsertedID;";
                 //SCOPE_IDENTITY() AS LastInsertedID;. Điều này sẽ trả về bill_id của bản ghi vừa chèn vào bảng bill.
                 cmd.Parameters.AddWithValue("@tableName", tableName);
-                cmd.Parameters.AddWithValue("@emp_id", this.userID);
                 cmd.Parameters.AddWithValue("@customerName", textBox_tenkhachhang.Text);
                 cmd.Parameters.AddWithValue("@total", total);
 

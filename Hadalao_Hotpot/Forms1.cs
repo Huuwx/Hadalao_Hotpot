@@ -13,7 +13,7 @@ namespace Hadalao_Hotpot
 {
     public partial class Forms1 : Form
     {
-        string chuoiketnoi = "Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;Integrated Security=True";
+        string chuoiketnoi = "Data Source=DESKTOP-0V5FIJG;Initial Catalog=QUANLYLAU;Integrated Security=True";
         SqlConnection conn = null;
         int close = 0;
         public Forms1()

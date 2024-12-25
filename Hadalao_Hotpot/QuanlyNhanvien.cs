@@ -23,7 +23,7 @@ namespace Hadalao_Hotpot
         }
         SqlConnection connection;
         SqlCommand command;
-        string str = @"Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;Integrated Security=True";
+        string str = @"Data Source=DESKTOP-0V5FIJG;Initial Catalog=QUANLYLAU;Integrated Security=True";
         SqlDataAdapter adapter = new SqlDataAdapter();
         DataTable table = new DataTable();
         

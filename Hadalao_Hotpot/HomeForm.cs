@@ -26,13 +26,13 @@ namespace Hadalao_Hotpot
 
         private void HomeForm_Load(object sender, EventArgs e)
         {
-            string chuoiketnoi = "Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
+            string chuoiketnoi = "Data Source=DESKTOP-0V5FIJG;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
             using (SqlConnection conn = new SqlConnection(chuoiketnoi))
             {
                 conn.Open();
                 SqlCommand sqlCommand = conn.CreateCommand();
                 //sqlCommand.CommandText = "SELECT SUM(total) as 'Tổng' FROM bill";
-                sqlCommand.CommandText = "SELECT TTBILL as 'Tổng' FROM bill";
+                sqlCommand.CommandText = "SELECT Total as 'Tổng' FROM bill";
 
                 using (SqlDataReader reader = sqlCommand.ExecuteReader())
                 {
