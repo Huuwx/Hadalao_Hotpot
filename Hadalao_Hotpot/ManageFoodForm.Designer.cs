@@ -34,6 +34,7 @@
             this.panel4 = new System.Windows.Forms.Panel();
             this.dtgvFood = new System.Windows.Forms.DataGridView();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.availableFoodBtn = new System.Windows.Forms.Button();
             this.loadbtn = new System.Windows.Forms.Button();
             this.DeleteFoodBtn = new System.Windows.Forms.Button();
             this.EditFoodBtn = new System.Windows.Forms.Button();
@@ -41,7 +42,8 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.SearchTb = new System.Windows.Forms.TextBox();
             this.SearchBtn = new System.Windows.Forms.Button();
-            this.availableFoodBtn = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.PrintByCursor = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.tcAdmin.SuspendLayout();
             this.tpFood.SuspendLayout();
@@ -56,7 +58,7 @@
             this.panel1.Controls.Add(this.tcAdmin);
             this.panel1.Location = new System.Drawing.Point(12, 11);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(777, 476);
+            this.panel1.Size = new System.Drawing.Size(777, 511);
             this.panel1.TabIndex = 0;
             // 
             // tcAdmin
@@ -69,7 +71,7 @@
             this.tcAdmin.Location = new System.Drawing.Point(3, 3);
             this.tcAdmin.Name = "tcAdmin";
             this.tcAdmin.SelectedIndex = 0;
-            this.tcAdmin.Size = new System.Drawing.Size(771, 466);
+            this.tcAdmin.Size = new System.Drawing.Size(771, 501);
             this.tcAdmin.TabIndex = 0;
             // 
             // tpFood
@@ -81,7 +83,7 @@
             this.tpFood.Location = new System.Drawing.Point(4, 22);
             this.tpFood.Name = "tpFood";
             this.tpFood.Padding = new System.Windows.Forms.Padding(3);
-            this.tpFood.Size = new System.Drawing.Size(763, 440);
+            this.tpFood.Size = new System.Drawing.Size(763, 475);
             this.tpFood.TabIndex = 0;
             this.tpFood.Text = "Thức ăn";
             // 
@@ -112,6 +114,8 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.PrintByCursor);
+            this.panel3.Controls.Add(this.button1);
             this.panel3.Controls.Add(this.availableFoodBtn);
             this.panel3.Controls.Add(this.loadbtn);
             this.panel3.Controls.Add(this.DeleteFoodBtn);
@@ -119,13 +123,27 @@
             this.panel3.Controls.Add(this.AddFoodBtn);
             this.panel3.Location = new System.Drawing.Point(9, 394);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(748, 41);
+            this.panel3.Size = new System.Drawing.Size(748, 78);
             this.panel3.TabIndex = 1;
+            // 
+            // availableFoodBtn
+            // 
+            this.availableFoodBtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.availableFoodBtn.BackColor = System.Drawing.Color.Teal;
+            this.availableFoodBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.availableFoodBtn.ForeColor = System.Drawing.Color.White;
+            this.availableFoodBtn.Location = new System.Drawing.Point(453, 3);
+            this.availableFoodBtn.Name = "availableFoodBtn";
+            this.availableFoodBtn.Size = new System.Drawing.Size(136, 30);
+            this.availableFoodBtn.TabIndex = 4;
+            this.availableFoodBtn.Text = "Các Món Còn";
+            this.availableFoodBtn.UseVisualStyleBackColor = false;
+            this.availableFoodBtn.Click += new System.EventHandler(this.availableFoodBtn_Click);
             // 
             // loadbtn
             // 
-            this.loadbtn.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.loadbtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.loadbtn.BackColor = System.Drawing.Color.Peru;
             this.loadbtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -140,8 +158,7 @@
             // 
             // DeleteFoodBtn
             // 
-            this.DeleteFoodBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.DeleteFoodBtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.DeleteFoodBtn.BackColor = System.Drawing.Color.Tomato;
             this.DeleteFoodBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -156,8 +173,7 @@
             // 
             // EditFoodBtn
             // 
-            this.EditFoodBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.EditFoodBtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.EditFoodBtn.BackColor = System.Drawing.Color.MediumAquamarine;
             this.EditFoodBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -172,8 +188,7 @@
             // 
             // AddFoodBtn
             // 
-            this.AddFoodBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.AddFoodBtn.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.AddFoodBtn.BackColor = System.Drawing.Color.LimeGreen;
             this.AddFoodBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -219,28 +234,42 @@
             this.SearchBtn.UseVisualStyleBackColor = true;
             this.SearchBtn.Click += new System.EventHandler(this.SearchBtn_Click);
             // 
-            // availableFoodBtn
+            // button1
             // 
-            this.availableFoodBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.availableFoodBtn.BackColor = System.Drawing.Color.Teal;
-            this.availableFoodBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.availableFoodBtn.ForeColor = System.Drawing.Color.White;
-            this.availableFoodBtn.Location = new System.Drawing.Point(453, 3);
-            this.availableFoodBtn.Name = "availableFoodBtn";
-            this.availableFoodBtn.Size = new System.Drawing.Size(136, 30);
-            this.availableFoodBtn.TabIndex = 4;
-            this.availableFoodBtn.Text = "Các Món Còn";
-            this.availableFoodBtn.UseVisualStyleBackColor = false;
-            this.availableFoodBtn.Click += new System.EventHandler(this.availableFoodBtn_Click);
+            this.button1.BackColor = System.Drawing.Color.Tomato;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.Color.White;
+            this.button1.Location = new System.Drawing.Point(303, 39);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(136, 30);
+            this.button1.TabIndex = 5;
+            this.button1.Text = "Giá TB";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // PrintByCursor
+            // 
+            this.PrintByCursor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.PrintByCursor.BackColor = System.Drawing.Color.MediumAquamarine;
+            this.PrintByCursor.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PrintByCursor.ForeColor = System.Drawing.Color.White;
+            this.PrintByCursor.Location = new System.Drawing.Point(153, 39);
+            this.PrintByCursor.Name = "PrintByCursor";
+            this.PrintByCursor.Size = new System.Drawing.Size(136, 30);
+            this.PrintByCursor.TabIndex = 6;
+            this.PrintByCursor.Text = "Print by cursor";
+            this.PrintByCursor.UseVisualStyleBackColor = false;
+            this.PrintByCursor.Click += new System.EventHandler(this.PrintByCursor_Click);
             // 
             // ManageFoodForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Brown;
-            this.ClientSize = new System.Drawing.Size(793, 488);
+            this.ClientSize = new System.Drawing.Size(793, 529);
             this.Controls.Add(this.panel1);
             this.Name = "ManageFoodForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -275,5 +304,7 @@
         private System.Windows.Forms.DataGridView dtgvFood;
         private System.Windows.Forms.Button loadbtn;
         private System.Windows.Forms.Button availableFoodBtn;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button PrintByCursor;
     }
 }

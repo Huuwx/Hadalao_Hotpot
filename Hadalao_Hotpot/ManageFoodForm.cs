@@ -18,7 +18,7 @@ namespace Hadalao_Hotpot
     public partial class ManageFoodForm : Form
     {
 
-        string connectionSTR = @"Data Source=DESKTOP-0V5FIJG;Initial Catalog=QUANLYLAU;Integrated Security=True";
+        string connectionSTR = @"Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;Integrated Security=True";
         SqlConnection conn = null;
 
         public ManageFoodForm()
@@ -86,7 +86,7 @@ namespace Hadalao_Hotpot
                 int i;
                 i = dtgvFood.CurrentRow.Index;
                 string food_idSTR = dtgvFood.Rows[i].Cells[0].Value.ToString();
-                Console.WriteLine( food_idSTR );
+                Console.WriteLine(food_idSTR);
                 try
                 {
                     string querydel = @"EXEC pr_DeleteFoodById @food_id";
@@ -164,7 +164,47 @@ namespace Hadalao_Hotpot
 
         private void availableFoodBtn_Click(object sender, EventArgs e)
         {
+            try
+            {
+                string query = "SELECT dbo.fn_TotalFoodByAvailability(@availability) AS TotalFood";
+                SqlCommand command = new SqlCommand(query, conn);
+                command.Parameters.AddWithValue("@availability", "Available");
+
+                var result = command.ExecuteScalar();
+                MessageBox.Show("Số lượng món ăn còn hàng: " + result.ToString(), "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
             PrintAvailableFoodList();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string query = "SELECT dbo.fn_AverageFoodPrice() AS AveragePrice";
+            SqlCommand command = new SqlCommand(query, conn);
+
+            var result = command.ExecuteScalar();
+            MessageBox.Show("Giá trung bình tất cả các món ăn: " + result.ToString(), "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void PrintByCursor_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string query = "SELECT dbo.fn_MaxPriceByCursor()";
+                SqlCommand command = new SqlCommand(query, conn);
+
+                var result = command.ExecuteScalar();
+                MessageBox.Show("Giá của món ăn đắt nhất: " + result.ToString(), "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
     }
 }

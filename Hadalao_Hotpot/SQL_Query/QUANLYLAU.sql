@@ -106,9 +106,23 @@ END;
 
 drop trigger trg_CheckSizeOfName
 --Function
+CREATE FUNCTION fn_TotalFoodByAvailability(@availability NVARCHAR(50))
+RETURNS INT
+AS
+BEGIN
+    RETURN (SELECT COUNT(*) FROM FOOD WHERE food_availability = @availability);
+END;
 
+drop function fn_TotalFoodByAvailability
 
+CREATE FUNCTION fn_AverageFoodPrice()
+RETURNS DECIMAL(10, 2)
+AS
+BEGIN
+    RETURN (SELECT AVG(food_price) FROM FOOD);
+END;
 
+drop function fn_AverageFoodPrice
 
 --Proc
 CREATE PROC pr_DeleteFoodById
@@ -142,6 +156,34 @@ Where food_availability = 'Available'
 
 drop view vw_AvailableFood
 --Cursor
+create function fn_MaxPriceByCursor()
+returns DECIMAL(10,2)
+as
+begin
+	DECLARE cur_MaxPrice CURSOR SCROLL FOR
+	SELECT food_name, food_price FROM FOOD;
+
+	OPEN cur_MaxPrice;
+
+	DECLARE @food_name NVARCHAR(100), @food_price DECIMAL(10,2), @maxprice DECIMAL(10,2);
+	FETCH FIRST FROM cur_MaxPrice INTO @food_name, @food_price;
+	set @maxprice = @food_price
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		if(@food_price > @maxprice)
+		begin
+			set @maxprice = @food_price
+		end
+		FETCH NEXT FROM cur_MaxPrice INTO @food_name, @food_price;
+	END;
+
+	CLOSE cur_MaxPrice;
+	DEALLOCATE cur_MaxPrice;
+	return @maxprice
+end
+
+drop function fn_MaxPriceByCursor
 
 --VŨ ĐĂNG HƯỞNG
 
