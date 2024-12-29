@@ -12,9 +12,9 @@ NAMSINH INT,
 
 CREATE TABLE food
 (
-    food_id INT IDENTITY(1,1) PRIMARY KEY,
+    food_id INT PRIMARY KEY,
     food_name nvarchar(100) not null,
-	food_price int not null,
+	food_price decimal not null,
 	food_availability nvarchar(20) not null
 );
 
@@ -68,44 +68,53 @@ VALUES
 ('Fries', 3, 'Available'),
 ('Ice Cream', 4, 'Available');
 
+drop table food
+
 select * from bill_info
 
 --CHU MẠNH HỮU - 2251172368
 
 --Trigger
+
+--Trigger khong cho xoa mon available
+
+--trigger cho insert food_availability auto la available
+
+--trigger cho insert food id tu nhay
+
 CREATE TRIGGER trg_CheckNegativePrice
 ON FOOD
-FOR INSERT, UPDATE
+INSTEAD OF INSERT
 AS
 BEGIN
-    IF EXISTS (SELECT * FROM INSERTED WHERE food_price < 0)
+    IF EXISTS (SELECT * FROM INSERTED WHERE food_price <= 0)
     BEGIN
         Print N'Giá món ăn không thể âm!';
-        ROLLBACK TRANSACTION;
-    END
-END;
-
-drop trigger trg_CheckNegativePrice
-
-CREATE TRIGGER trg_CheckSizeOfName
-ON FOOD
-INSTEAD OF INSERT, UPDATE
-AS
-BEGIN
-    IF EXISTS (SELECT * FROM INSERTED WHERE Len(food_name) > 20)
-    BEGIN
-        Print N'Tên món ăn quá dài! (Quá 20 kí tự)';
-        ROLLBACK TRANSACTION;
+        --ROLLBACK TRANSACTION;
     END
 	ELSE
 	BEGIN
 		INSERT INTO FOOD (food_name, food_price, food_availability)
-		SELECT food_name, food_price, food_availability from inserted
+		SELECT food_name, food_price, 'Available' from inserted
 	END
 END;
 
-drop trigger trg_CheckSizeOfName
+drop trigger trg_CheckNegativePrice
+
+create trigger trg_CheckDelete
+on food
+for delete
+as
+begin
+	insert into food select food_name, food_price, food_availability from deleted
+	where food_availability = 'Available'
+end
+
+drop trigger trg_CheckDelete
 --Function
+
+-- thay tinh gia trung binh food bang hien bang cac food unavailable
+
 CREATE FUNCTION fn_TotalFoodByAvailability(@availability NVARCHAR(50))
 RETURNS INT
 AS
@@ -115,16 +124,25 @@ END;
 
 drop function fn_TotalFoodByAvailability
 
-CREATE FUNCTION fn_AverageFoodPrice()
-RETURNS DECIMAL(10, 2)
-AS
-BEGIN
-    RETURN (SELECT AVG(food_price) FROM FOOD);
-END;
+--CREATE FUNCTION fn_AverageFoodPrice()
+--RETURNS DECIMAL(10, 2)
+--AS
+--BEGIN
+--    RETURN (SELECT AVG(food_price) FROM FOOD);
+--END;
 
-drop function fn_AverageFoodPrice
+--drop function fn_AverageFoodPrice
+
+Create function fn_UnavailableFood()
+Returns table
+as
+	return (SELECT food_id, food_name, food_price, food_availability FROM FOOD
+			Where food_availability = 'Unavailable')
+
+drop function fn_UnavailableFood
 
 --Proc
+
 CREATE PROC pr_DeleteFoodById
     @food_id INT
 AS
@@ -142,6 +160,26 @@ BEGIN
 END;
 
 drop proc pr_SearchByName
+
+create proc pr_ThemMonAn
+@food_name nvarchar(50), @food_price decimal
+as begin
+	declare @id int
+	select @id = Count(food_id) from food 
+	if(@id >= 1)
+	begin
+		Insert into food(food_id ,food_name, food_price, food_availability) values
+		(@id + 1, @food_name, @food_price, 'Available')
+	end
+	else
+	begin
+		Insert into food(food_id ,food_name, food_price, food_availability) values
+		(1, @food_name, @food_price, 'Available')
+	end
+	end
+
+drop proc pr_ThemMonAn
+
 --View
 CREATE VIEW vw_FoodDetails
 AS
@@ -156,6 +194,11 @@ Where food_availability = 'Available'
 
 drop view vw_AvailableFood
 --Cursor
+
+-- max price tra ve table, hien thi ten va gia cua mon dat nhat 
+
+-- Tao trigger cap nhat lai id mon an cho food khi xoa
+
 create function fn_MaxPriceByCursor()
 returns DECIMAL(10,2)
 as
@@ -184,6 +227,16 @@ begin
 end
 
 drop function fn_MaxPriceByCursor
+
+create trigger trg_UpdateIdAfterDelete
+on food
+for delete
+as
+begin
+
+end
+
+select * from food
 
 --VŨ ĐĂNG HƯỞNG
 

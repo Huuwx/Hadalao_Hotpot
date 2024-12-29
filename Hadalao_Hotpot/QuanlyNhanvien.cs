@@ -115,7 +115,7 @@ namespace Hadalao_Hotpot
         private void loaddata()
         {
             command = connection.CreateCommand();
-            command.CommandText = "select MANV as [Mã nhân viên], TENNV as [Họ và tên], username as [Tài khoản], passwordd as [Mật khẩu], NAMSINH as [Ngày sinh] , SDT as [SĐT] , TINHTRANG as [Tình trạng] from NVQUAN ";
+            command.CommandText = "select MANV as [Mã nhân viên], TENNV as [Họ và tên], NAMSINH as [Ngày sinh] , SDT as [SĐT] , TINHTRANG as [Tình trạng] from NVQUAN ";
             adapter.SelectCommand = command;
             table.Clear();
             adapter.Fill(table);

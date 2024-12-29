@@ -18,7 +18,7 @@ namespace Hadalao_Hotpot
     public partial class ManageFoodForm : Form
     {
 
-        string connectionSTR = @"Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;Integrated Security=True";
+        string connectionSTR = @"Data Source=DESKTOP-0V5FIJG;Initial Catalog=QUANLYLAU;Integrated Security=True";
         SqlConnection conn = null;
 
         public ManageFoodForm()
@@ -44,6 +44,21 @@ namespace Hadalao_Hotpot
         public void PrintAvailableFoodList()
         {
             string query = "SELECT * FROM vw_AvailableFood";
+
+            SqlCommand command = new SqlCommand(query, conn);
+
+            DataTable data = new DataTable();
+
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+            adapter.Fill(data);
+
+            dtgvFood.DataSource = data;
+        }
+
+        public void PrintUnavailableFoodList()
+        {
+            string query = "SELECT * from fn_UnavailableFood()";
 
             SqlCommand command = new SqlCommand(query, conn);
 
@@ -183,11 +198,13 @@ namespace Hadalao_Hotpot
 
         private void button1_Click(object sender, EventArgs e)
         {
-            string query = "SELECT dbo.fn_AverageFoodPrice() AS AveragePrice";
-            SqlCommand command = new SqlCommand(query, conn);
+            //string query = "SELECT dbo.fn_AverageFoodPrice() AS AveragePrice";
+            //SqlCommand command = new SqlCommand(query, conn);
 
-            var result = command.ExecuteScalar();
-            MessageBox.Show("Giá trung bình tất cả các món ăn: " + result.ToString(), "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            //var result = command.ExecuteScalar();
+            //MessageBox.Show("Giá trung bình tất cả các món ăn: " + result.ToString(), "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            PrintUnavailableFoodList();
         }
 
         private void PrintByCursor_Click(object sender, EventArgs e)

@@ -15,7 +15,7 @@ namespace Hadalao_Hotpot
     public partial class AddAndEditFoodForm : Form
     {
 
-        string connectionSTR = @"Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;Integrated Security=True";
+        string connectionSTR = @"Data Source=DESKTOP-0V5FIJG;Initial Catalog=QUANLYLAU;Integrated Security=True";
         SqlConnection conn = null;
         int close = 0;
         int id;
@@ -59,10 +59,10 @@ namespace Hadalao_Hotpot
                 if (this.Text == "Chỉnh Sửa")
                 {
                     command.Parameters.AddWithValue("@food_id", id); // Đảm bảo id được truyền chính xác từ SetFoodDetails
+                    command.Parameters.AddWithValue("@food_availability", cbbTT.Text);
                 }
                 command.Parameters.AddWithValue("@food_name", txbFoodName.Text);
                 command.Parameters.AddWithValue("@food_price", nbudPrice.Value);
-                command.Parameters.AddWithValue("@food_availability", cbbTT.Text);
                 command.ExecuteNonQuery();
                 this.Close();
             }
@@ -82,7 +82,7 @@ namespace Hadalao_Hotpot
 
             if(this.Text == "Thêm")
             {
-                query = "INSERT INTO FOOD VALUES (@food_name,@food_price,@food_availability)";
+                query = "EXEC pr_ThemMonAn @food_name, @food_price";
             }
             else
             {
