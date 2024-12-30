@@ -94,8 +94,8 @@ BEGIN
     END
 	ELSE
 	BEGIN
-		INSERT INTO FOOD (food_name, food_price, food_availability)
-		SELECT food_name, food_price, 'Available' from inserted
+		INSERT INTO FOOD (food_id, food_name, food_price, food_availability)
+		SELECT food_id, food_name, food_price, 'Available' from inserted
 	END
 END;
 
@@ -106,7 +106,7 @@ on food
 for delete
 as
 begin
-	insert into food select food_name, food_price, food_availability from deleted
+	insert into food select food_id, food_name, food_price, food_availability from deleted
 	where food_availability = 'Available'
 end
 
@@ -233,8 +233,40 @@ on food
 for delete
 as
 begin
+    DECLARE @new_id INT;
+	set @new_id = 1;
+    DECLARE @current_id INT;
 
+    -- Khai báo con trỏ để lấy danh sách các ID còn lại theo thứ tự tăng dần
+    DECLARE cur CURSOR SCROLL
+	FOR 
+	SELECT food_id FROM food ORDER BY food_id;
+
+    -- Mở con trỏ
+    OPEN cur;
+
+    -- Lặp qua con trỏ
+    FETCH FIRST FROM cur INTO @current_id; -- Lấy bản ghi đầu tiên
+    WHILE (@@FETCH_STATUS = 0)
+	Begin
+        -- Cập nhật ID của món ăn
+        UPDATE food
+        SET food_id = @new_id
+        WHERE food_id = @current_id;
+
+        -- Tăng giá trị ID mới
+        SET @new_id = @new_id + 1;
+
+        -- Lấy bản ghi tiếp theo
+        FETCH NEXT FROM cur INTO @current_id;
+    END
+
+    -- Đóng con trỏ
+    CLOSE cur;
+	DEALLOCATE cur;
 end
+
+drop trigger trg_UpdateIdAfterDelete
 
 select * from food
 
