@@ -23,13 +23,50 @@ namespace Hadalao_Hotpot
         public AddAndEditFoodForm()
         {
             InitializeComponent();
+            InitializePlaceHolderFortxbFoodName();
+        }
+
+        private void InitializePlaceHolderFortxbFoodName()
+        {
+            // Xóa văn bản khi người dùng nhấn vào
+            this.txbFoodName.Enter += (s, e) =>
+            {
+                if (this.txbFoodName.Text == "Nhập tên món ăn...")
+                {
+                    this.txbFoodName.Text = "";
+                    this.txbFoodName.ForeColor = Color.Black;
+                }
+            };
+
+            // Hiển thị lại văn bản nếu người dùng không nhập
+            this.txbFoodName.Leave += (s, e) =>
+            {
+                if (string.IsNullOrEmpty(this.txbFoodName.Text))
+                {
+                    this.txbFoodName.Text = "Nhập tên món ăn...";
+                    this.txbFoodName.ForeColor = Color.Gray;
+                }
+            };
+        }
+
+        public void InitializeItemsForCbTT()
+        {
+            if (this.Text == "Thêm")
+            {
+                cbbTT.Items.Add("Available");
+            }
+            else
+            {
+                cbbTT.Items.Add("Available");
+                cbbTT.Items.Add("Unavailable");
+            }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            
+
             DialogResult rel = MessageBox.Show("Bạn có chắc chắn muốn thoát ? ", "Hỏi Thoát", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if(rel == DialogResult.Yes)
+            if (rel == DialogResult.Yes)
             {
                 close = 1;
                 this.Close();
@@ -66,11 +103,11 @@ namespace Hadalao_Hotpot
                 command.ExecuteNonQuery();
                 this.Close();
             }
-            catch(SqlException ex)
+            catch (SqlException ex)
             {
                 MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            catch(FormatException ex)
+            catch (FormatException ex)
             {
                 MessageBox.Show("Lỗi kiểu dữ liệu : " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -80,7 +117,7 @@ namespace Hadalao_Hotpot
         {
             string query;
 
-            if(this.Text == "Thêm")
+            if (this.Text == "Thêm")
             {
                 query = "EXEC pr_ThemMonAn @food_name, @food_price";
             }
@@ -92,13 +129,13 @@ namespace Hadalao_Hotpot
                 cmdc.Parameters.AddWithValue("@food_id", id);
 
                 var existingRecords = (int)cmdc.ExecuteScalar();
-                if(existingRecords == 0)
+                if (existingRecords == 0)
                 {
                     MessageBox.Show("Mã thức ăn không hợp lệ !", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
             }
-            if(!string.IsNullOrEmpty(query))
+            if (!string.IsNullOrEmpty(query))
                 changeorAddValue(query);
         }
 
@@ -115,7 +152,7 @@ namespace Hadalao_Hotpot
 
         private void txbFoodName_TextChanged(object sender, EventArgs e)
         {
-            
+
         }
 
         public void SetFoodDetails(int foodId, string foodName, decimal foodPrice, string foodAvailability)

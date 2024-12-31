@@ -200,7 +200,13 @@ drop view vw_AvailableFood
 -- Tao trigger cap nhat lai id mon an cho food khi xoa
 
 create function fn_MaxPriceByCursor()
-returns DECIMAL(10,2)
+RETURNS @ResultTable TABLE
+(
+	food_id int,
+    food_name NVARCHAR(100),
+    food_price DECIMAL(10, 2),
+	food_availability nvarchar(20)
+)
 as
 begin
 	DECLARE cur_MaxPrice CURSOR SCROLL FOR
@@ -223,7 +229,10 @@ begin
 
 	CLOSE cur_MaxPrice;
 	DEALLOCATE cur_MaxPrice;
-	return @maxprice
+	INSERT INTO @ResultTable (food_id, food_name, food_price, food_availability)
+    select food_id, food_name, food_price, food_availability from food where food_price = @maxprice
+
+	return;
 end
 
 drop function fn_MaxPriceByCursor
@@ -233,37 +242,40 @@ on food
 for delete
 as
 begin
-    DECLARE @new_id INT;
-	set @new_id = 1;
-    DECLARE @current_id INT;
+	if((select food_availability from deleted) = 'Unavailable')
+	begin
+		DECLARE @new_id INT;
+		set @new_id = 1;
+		DECLARE @current_id INT;
 
-    -- Khai báo con trỏ để lấy danh sách các ID còn lại theo thứ tự tăng dần
-    DECLARE cur CURSOR SCROLL
-	FOR 
-	SELECT food_id FROM food ORDER BY food_id;
+		-- Khai báo con trỏ để lấy danh sách các ID còn lại theo thứ tự tăng dần
+		DECLARE cur CURSOR SCROLL
+		FOR 
+		SELECT food_id FROM food ORDER BY food_id;
 
-    -- Mở con trỏ
-    OPEN cur;
+		-- Mở con trỏ
+		OPEN cur;
 
-    -- Lặp qua con trỏ
-    FETCH FIRST FROM cur INTO @current_id; -- Lấy bản ghi đầu tiên
-    WHILE (@@FETCH_STATUS = 0)
-	Begin
-        -- Cập nhật ID của món ăn
-        UPDATE food
-        SET food_id = @new_id
-        WHERE food_id = @current_id;
+		-- Lặp qua con trỏ
+		FETCH FIRST FROM cur INTO @current_id; -- Lấy bản ghi đầu tiên
+		WHILE (@@FETCH_STATUS = 0)
+		Begin
+			-- Cập nhật ID của món ăn
+			UPDATE food
+			SET food_id = @new_id
+			WHERE food_id = @current_id;
 
-        -- Tăng giá trị ID mới
-        SET @new_id = @new_id + 1;
+			-- Tăng giá trị ID mới
+			SET @new_id = @new_id + 1;
 
-        -- Lấy bản ghi tiếp theo
-        FETCH NEXT FROM cur INTO @current_id;
-    END
+			-- Lấy bản ghi tiếp theo
+			FETCH NEXT FROM cur INTO @current_id;
+		END
 
-    -- Đóng con trỏ
-    CLOSE cur;
-	DEALLOCATE cur;
+		-- Đóng con trỏ
+		CLOSE cur;
+		DEALLOCATE cur;
+	end
 end
 
 drop trigger trg_UpdateIdAfterDelete

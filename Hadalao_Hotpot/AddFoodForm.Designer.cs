@@ -1,4 +1,6 @@
-﻿namespace Hadalao_Hotpot
+﻿using System.Drawing;
+
+namespace Hadalao_Hotpot
 {
     partial class AddAndEditFoodForm
     {
@@ -31,7 +33,6 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnCancel = new System.Windows.Forms.Button();
             this.btnAccept = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
             this.cbbTT = new System.Windows.Forms.ComboBox();
             this.lbTT = new System.Windows.Forms.Label();
@@ -53,7 +54,6 @@
             // 
             this.panel1.Controls.Add(this.btnCancel);
             this.panel1.Controls.Add(this.btnAccept);
-            this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.panel5);
             this.panel1.Controls.Add(this.panel4);
             this.panel1.Controls.Add(this.panel3);
@@ -86,17 +86,6 @@
             this.btnAccept.UseVisualStyleBackColor = false;
             this.btnAccept.Click += new System.EventHandler(this.btnAccept_Click);
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(353, 230);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(119, 26);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Chỉnh sửa";
-            // 
             // panel5
             // 
             this.panel5.Controls.Add(this.cbbTT);
@@ -111,9 +100,6 @@
             this.cbbTT.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbbTT.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cbbTT.FormattingEnabled = true;
-            this.cbbTT.Items.AddRange(new object[] {
-            "Available",
-            "Unavailable"});
             this.cbbTT.Location = new System.Drawing.Point(133, 12);
             this.cbbTT.Name = "cbbTT";
             this.cbbTT.Size = new System.Drawing.Size(175, 21);
@@ -181,10 +167,12 @@
             // txbFoodName
             // 
             this.txbFoodName.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txbFoodName.ForeColor = System.Drawing.SystemColors.WindowText;
             this.txbFoodName.Location = new System.Drawing.Point(133, 12);
             this.txbFoodName.Name = "txbFoodName";
             this.txbFoodName.Size = new System.Drawing.Size(175, 19);
             this.txbFoodName.TabIndex = 1;
+            this.txbFoodName.Text = "Nhập tên món ăn...";
             this.txbFoodName.TextChanged += new System.EventHandler(this.txbFoodName_TextChanged);
             // 
             // lbFoodName
@@ -226,7 +214,6 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AddAndEditFoodForm_FormClosed);
             this.Load += new System.EventHandler(this.AddAndEditFoodForm_Load);
             this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
             this.panel4.ResumeLayout(false);
@@ -253,7 +240,6 @@
         private System.Windows.Forms.ComboBox cbbTT;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnAccept;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
     }
 }
