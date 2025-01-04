@@ -23,6 +23,7 @@ namespace Hadalao_Hotpot
         }
         SqlConnection connection;
         SqlCommand command;
+        //string connectionString = @"Data Source=DESKTOP-1ST7HQB\DANGHUONG;Initial Catalog=QUANLYLAU1;Integrated Security=True";
         string str = @"Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;Integrated Security=True";
         SqlDataAdapter adapter = new SqlDataAdapter();
         DataTable table = new DataTable();
@@ -320,6 +321,11 @@ namespace Hadalao_Hotpot
     }
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void textStatus_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }
