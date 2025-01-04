@@ -22,7 +22,7 @@ namespace Hadalao_Hotpot
         public int datban = 0;
         public int thanhtoan = 0;
 
-        string chuoiketnoi = "Data Source=DESKTOP-4UUFE49;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
+        string chuoiketnoi = "Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
         SqlConnection connection = null;
         SqlDataAdapter adapter = new SqlDataAdapter();
         SqlCommand cmd = new SqlCommand();
@@ -163,7 +163,7 @@ namespace Hadalao_Hotpot
                     }
 
                     // Sau khi thêm thành công, bạn có thể thêm vào DataGridView để hiển thị
-                    dgv.Rows.Add(comboBox_food.Text, numericUpDown_food.Value, textBox_price.Text);
+                    dgv.Rows.Add(comboBox_food.Text, numericUpDown_food.Value, int.Parse(textBox_price.Text) * numericUpDown_food.Value);
                 }
             }
             catch (Exception ex)
@@ -608,41 +608,46 @@ namespace Hadalao_Hotpot
             // Kiểm tra nếu người dùng nhấn vào một ô dữ liệu trong DataGridView (không phải tiêu đề cột)
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
-                // Sử dụng chuỗi kết nối sẵn có
-                string connectionString = chuoiketnoi;
+                
+            }
+        }
 
-                // Tạo câu lệnh SQL để truy vấn dữ liệu từ view vw_CustomerBills cho bàn hiện tại
-                string query = @"SELECT * FROM vw_CustomerBills WHERE MABAN = @MABAN";
+        private void PrintCustomerBill()
+        {
+            // Sử dụng chuỗi kết nối sẵn có
+            string connectionString = chuoiketnoi;
 
-                // Tạo một SqlConnection và SqlDataAdapter
-                using (SqlConnection connection = new SqlConnection(connectionString))
+            // Tạo câu lệnh SQL để truy vấn dữ liệu từ view vw_CustomerBills cho bàn hiện tại
+            string query = @"SELECT * FROM vw_CustomerBills";
+
+            // Tạo một SqlConnection và SqlDataAdapter
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
                 {
-                    try
-                    {
-                        // Mở kết nối
-                        connection.Open();
+                    // Mở kết nối
+                    connection.Open();
 
-                        // Tạo SqlCommand và thêm tham số cho câu truy vấn
-                        SqlCommand command = new SqlCommand(query, connection);
-                        command.Parameters.AddWithValue("@MABAN", tableName); // Dùng tableName để lọc dữ liệu cho bàn hiện tại
+                    // Tạo SqlCommand và thêm tham số cho câu truy vấn
+                    SqlCommand command = new SqlCommand(query, connection);
+                    /*command.Parameters.AddWithValue("@MABAN", tableName);*/ // Dùng tableName để lọc dữ liệu cho bàn hiện tại
 
-                        // Tạo SqlDataAdapter để thực hiện truy vấn
-                        SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+                    // Tạo DataTable để chứa kết quả truy vấn
+                    DataTable dataTable = new DataTable();
 
-                        // Tạo DataTable để chứa kết quả truy vấn
-                        DataTable dataTable = new DataTable();
+                    // Tạo SqlDataAdapter để thực hiện truy vấn
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
 
-                        // Điền dữ liệu vào DataTable
-                        dataAdapter.Fill(dataTable);
+                    // Điền dữ liệu vào DataTable
+                    dataAdapter.Fill(dataTable);
 
-                        // Gán DataTable cho DataGridView
-                        dgv.DataSource = dataTable;  // dgv là DataGridView của bạn
-                    }
-                    catch (Exception ex)
-                    {
-                        // Hiển thị thông báo lỗi nếu có
-                        MessageBox.Show("Error: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    // Gán DataTable cho DataGridView
+                    dgv.DataSource = dataTable;  // dgv là DataGridView của bạn
+                }
+                catch (Exception ex)
+                {
+                    // Hiển thị thông báo lỗi nếu có
+                    MessageBox.Show("Error: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

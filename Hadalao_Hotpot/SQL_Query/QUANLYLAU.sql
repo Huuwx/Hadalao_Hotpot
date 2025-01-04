@@ -26,6 +26,8 @@ TENBAN VARCHAR(20) NOT NULL,
 TTBAN VARCHAR(20),
 )
 
+drop table BAN
+
 insert into BAN values('Bàn 1', 'ban 1', 'ok');
 
 CREATE TABLE KHACH
@@ -34,6 +36,8 @@ TENKH NVARCHAR(20) NOT NULL,
 SDT VARCHAR(10) NOT NULL,
 TUOI INT,
 )
+
+drop table KHACH
 
 CREATE TABLE bill
 (
@@ -72,17 +76,17 @@ INSERT INTO bill (payment_time, MABAN, customer_name,total) VALUES (GETDATE(), @
 
 
 
-INSERT INTO food (food_name, food_price, food_availability)
+INSERT INTO food (food_id, food_name, food_price, food_availability)
 VALUES 
-('Burger', 5, 'Available'),
-('Salad', 8, 'Available'),
-('Pasta', 12, 'Available'),
-('Sandwich', 6, 'Available'),
-('Soup', 4, 'Available'),
-('Steak', 15, 'Available'),
-('Sushi', 18, 'Available'),	
-('Fries', 3, 'Available'),
-('Ice Cream', 4, 'Available');
+(11, 'Burger', 5, 'Available'),
+(12, 'Salad', 8, 'Available'),
+(13, 'Pasta', 12, 'Available'),
+(14, 'Sandwich', 6, 'Available'),
+(15, 'Soup', 4, 'Available'),
+(16, 'Steak', 15, 'Available'),
+(17, 'Sushi', 18, 'Available'),	
+(18, 'Fries', 3, 'Available'),
+(19, 'Ice Cream', 4, 'Available');
 
 drop table food
 
@@ -321,7 +325,7 @@ END;
 SELECT dbo.fn_TongThuNhap()
 
 --1.2function thanh toán hóa đơn
-alter FUNCTION fn_Tongbillthanhtoan (@bill_id INT)
+create FUNCTION fn_Tongbillthanhtoan (@bill_id INT)
 RETURNS DECIMAL(10, 2)
 AS
 BEGIN
@@ -361,31 +365,31 @@ create trigger
 
 --3.1 view tất cả hóa đơn đã thanh toán
 select *from bill
-alter view vw_Billall AS
+create view vw_Billall AS
 select *from bill
 SELECT * FROM vw_Billall;
 drop view vw_Billall
 select *from bill
 select *from vw_ga
 select DISTINCT  bill.bill_id, bill.payment_time, bill.MABAN, bill.MAKH, bill.total , bill.bill_status FROM bill
-alter view vw_Bill_dathanhtoan AS
+create view vw_Bill_dathanhtoan AS
 select *from bill
 where bill.bill_status = N'Đã thanh toán'
 SELECT * FROM vw_Bill_dathanhtoan;
 
-alter view vw_Bill_chuathanhtoan AS
+create view vw_Bill_chuathanhtoan AS
 select *from bill
 where bill.bill_status = N'Chưa thanh toán'
 SELECT * FROM vw_Bill_chuathanhtoan;
 
 
 
-select *from bill
+select *from bill_info
 
 
 select *from bill where bill_status = N'Đã thanh toán'
 --3.2 view hóa đơn chi tiết
-alter VIEW vw_CustomerBills
+create VIEW vw_CustomerBills
 AS
 SELECT food.food_name , bill_info.quantity , (bill_info.quantity*food_price) as Price from bill_info
 INNER JOIN food ON bill_info.food_id = food.food_id
@@ -412,7 +416,7 @@ EXEC pr_UpdateBillTotal @bill_id = 4;
 select *from bill
 select *from bill_info
 --2.2 procedure thêm đồ ăn vào trong hóa đơn
-alter PROCEDURE pr_AddFoodToBill
+create PROCEDURE pr_AddFoodToBill
     @bill_id INT,
     @food_id INT,
     @quantity INT
@@ -470,7 +474,7 @@ drop trigger trig_quantity
 	select * from bill
 	delete from bill
 
-alter TRIGGER trig_deletebill
+create TRIGGER trig_deletebill
 ON bill
 FOR DELETE
 AS

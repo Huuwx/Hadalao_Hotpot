@@ -7,7 +7,7 @@ namespace Hadalao_Hotpot
 {
     public partial class HoaDonForm : Form
     {
-        string chuoiketnoi = "Data Source=DESKTOP-4UUFE49;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
+        string chuoiketnoi = "Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
 
         public HoaDonForm()
         {
@@ -115,7 +115,7 @@ namespace Hadalao_Hotpot
                 int billId = Convert.ToInt32(dataGridView1.Rows[e.RowIndex].Cells["bill_id"].Value);
 
                 // Cập nhật hoặc xử lý các thông tin chi tiết hóa đơn (ví dụ: mở thông tin chi tiết, thanh toán)
-                ShowBillDetails(billId);
+                //ShowBillDetails(billId);
             }
         }
 
