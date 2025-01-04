@@ -181,6 +181,9 @@ as begin
 drop proc pr_ThemMonAn
 
 --View
+
+--Them view hien thi mon an duoc ban nhieu nhat
+
 CREATE VIEW vw_FoodDetails
 AS
 SELECT food_id, food_name, food_price, food_availability FROM FOOD;
