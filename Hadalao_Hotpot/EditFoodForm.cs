@@ -16,5 +16,10 @@ namespace Hadalao_Hotpot
         {
             InitializeComponent();
         }
+
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

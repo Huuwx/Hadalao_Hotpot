@@ -261,5 +261,10 @@ namespace Hadalao_Hotpot
             }
 
         }
+
+        private void dtgvFood_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }
