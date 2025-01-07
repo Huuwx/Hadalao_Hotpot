@@ -22,7 +22,7 @@ namespace Hadalao_Hotpot
         public int datban = 0;
         public int thanhtoan = 0;
 
-        string chuoiketnoi = "Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
+        string chuoiketnoi = "Data Source=DESKTOP-4UUFE49;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
         SqlConnection connection = null;
         SqlDataAdapter adapter = new SqlDataAdapter();
         SqlCommand cmd = new SqlCommand();
@@ -127,50 +127,73 @@ namespace Hadalao_Hotpot
                     throw new Exception("Món ăn không tồn tại trong cơ sở dữ liệu");
                 }
 
-                // Bước 2: Kiểm tra nếu chưa có hóa đơn cho bàn hiện tại
+                // Bước 2: Kiểm tra xem đã có hóa đơn chưa thanh toán
                 int billId = GetCurrentBillId(); // Lấy bill_id hiện tại của bàn
 
-                // Nếu chưa có hóa đơn (billId == -1), tạo hóa đơn mới
                 if (billId == -1)
                 {
-                    billId = CreateNewBill();  // Tạo hóa đơn mới và lấy bill_id
-                    if (billId == -1)
-                    {
-                        throw new Exception("Không thể tạo hóa đơn mới");
-                    }
-                    MessageBox.Show($"Hóa đơn mới được tạo với bill_id: {billId}"); // Thông báo hóa đơn mới
+                    throw new Exception("Chưa có hóa đơn. Vui lòng tạo hóa đơn trước.");
                 }
 
                 // Bước 3: Lấy quantity từ numericUpDown_food
                 int quantity = (int)numericUpDown_food.Value;
 
-                // Bước 4: Thêm món ăn vào bảng bill_info
+                // Bước 4: Kiểm tra nếu món ăn đã có trong bill_info, nếu có thì cập nhật số lượng, nếu chưa thì thêm mới
+                string checkFoodInBillInfoQuery = "SELECT quantity FROM bill_info WHERE bill_id = @bill_id AND food_id = @food_id";
                 using (SqlConnection connection = new SqlConnection(chuoiketnoi))
                 {
                     connection.Open();
 
-                    // Lệnh SQL để thêm món ăn vào bill_info
-                    string insertBillInfoQuery = "INSERT INTO bill_info (bill_id, food_id, quantity) VALUES (@bill_id, @food_id, @quantity)";
-
-                    using (SqlCommand cmd = new SqlCommand(insertBillInfoQuery, connection))
+                    using (SqlCommand cmd = new SqlCommand(checkFoodInBillInfoQuery, connection))
                     {
-                        cmd.Parameters.AddWithValue("@bill_id", billId);  // Đảm bảo bill_id đã tồn tại trong bảng bill
-                        cmd.Parameters.AddWithValue("@food_id", foodId);  // ID món ăn
-                        cmd.Parameters.AddWithValue("@quantity", quantity); // Số lượng món ăn
+                        cmd.Parameters.AddWithValue("@bill_id", billId);
+                        cmd.Parameters.AddWithValue("@food_id", foodId);
 
-                        // Thực thi lệnh SQL để thêm món ăn vào bill_info
-                        cmd.ExecuteNonQuery();
+                        object result = cmd.ExecuteScalar();
+                        if (result != null)
+                        {
+                            // Món ăn đã có trong bill_info, cập nhật số lượng
+                            int currentQuantity = Convert.ToInt32(result);
+                            int newQuantity = currentQuantity + quantity;
+
+                            string updateQuantityQuery = "UPDATE bill_info SET quantity = @newQuantity WHERE bill_id = @bill_id AND food_id = @food_id";
+                            using (SqlCommand updateCmd = new SqlCommand(updateQuantityQuery, connection))
+                            {
+                                updateCmd.Parameters.AddWithValue("@newQuantity", newQuantity);
+                                updateCmd.Parameters.AddWithValue("@bill_id", billId);
+                                updateCmd.Parameters.AddWithValue("@food_id", foodId);
+                                updateCmd.ExecuteNonQuery();
+                            }
+
+                            MessageBox.Show($"Cập nhật số lượng món ăn thành công. Số lượng mới: {newQuantity}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            // Món ăn chưa có trong bill_info, thêm mới
+                            string insertBillInfoQuery = "INSERT INTO bill_info (bill_id, food_id, quantity) VALUES (@bill_id, @food_id, @quantity)";
+
+                            using (SqlCommand insertCmd = new SqlCommand(insertBillInfoQuery, connection))
+                            {
+                                insertCmd.Parameters.AddWithValue("@bill_id", billId);  // Đảm bảo bill_id đã tồn tại trong bảng bill
+                                insertCmd.Parameters.AddWithValue("@food_id", foodId);  // ID món ăn
+                                insertCmd.Parameters.AddWithValue("@quantity", quantity); // Số lượng món ăn
+                                insertCmd.ExecuteNonQuery();
+                            }
+
+                            MessageBox.Show($"Thêm món ăn vào hóa đơn thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
-
-                    // Sau khi thêm thành công, bạn có thể thêm vào DataGridView để hiển thị
-                    dgv.Rows.Add(comboBox_food.Text, numericUpDown_food.Value, int.Parse(textBox_price.Text) * numericUpDown_food.Value);
                 }
+
+                // Sau khi thêm thành công, bạn có thể thêm vào DataGridView để hiển thị
+                dgv.Rows.Add(comboBox_food.Text, numericUpDown_food.Value, int.Parse(textBox_price.Text) * numericUpDown_food.Value);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
 
         // Phương thức lấy food_id từ tên món ăn
         private int GetFoodId(string foodName)
@@ -206,7 +229,7 @@ namespace Hadalao_Hotpot
             {
                 connection.Open();
 
-                string query = "SELECT bill_id FROM bill WHERE MABAN = @MABAN";
+                string query = "SELECT bill_id FROM bill WHERE MABAN = @MABAN AND bill_status = N'Chưa thanh toán'";
 
                 using (SqlCommand cmd = new SqlCommand(query, connection))
                 {
@@ -222,10 +245,10 @@ namespace Hadalao_Hotpot
 
             return billId;
         }
-        private int CreateNewBill()
+
+        private int CreateNewBill(string maKhach)
         {
             int billId = -1;
-            string maKhach = comboBoxkhach.Text; // Lấy tên khách hàng từ comboBoxkhach
 
             // Kiểm tra xem MAKH có tồn tại trong bảng KHACH không
             string checkCustomerQuery = "SELECT MAKH FROM KHACH WHERE TENKH = @TENKH";
@@ -251,10 +274,10 @@ namespace Hadalao_Hotpot
                     }
                 }
 
-                // Nếu MAKH tồn tại, tiếp tục tạo hóa đơn mới
-                string insertBillQuery = "INSERT INTO bill (payment_time, MABAN, MAKH, total) " +
-                                         "VALUES (GETDATE(), @MABAN, @MAKH, 0); " +  // Trạng thái 'Pending'
-                                         "SELECT SCOPE_IDENTITY();"; // Lấy bill_id vừa tạo
+                // Tạo hóa đơn mới
+                string insertBillQuery = "INSERT INTO bill (payment_time, MABAN, MAKH, total, bill_status) " +
+                                        "VALUES (GETDATE(), @MABAN, @MAKH, 0, N'Chưa thanh toán'); " +  // Tạo hóa đơn mới với trạng thái 'Chưa thanh toán'
+                                        "SELECT SCOPE_IDENTITY();"; // Lấy bill_id vừa tạo
 
                 using (SqlCommand cmd = new SqlCommand(insertBillQuery, connection))
                 {
@@ -362,12 +385,33 @@ namespace Hadalao_Hotpot
                 {
                     if (datban == 0)
                     {
+                        // Đặt bàn, cập nhật trạng thái bàn
                         button_datban.BackColor = Color.Red;
                         button_datban.Text = "Bàn đang được sử dụng";
                         datban = 1;
                         comboBoxkhach.Enabled = false;
                         panel1.Enabled = true;
                         panel2.Enabled = true;
+
+                        // Bước 1: Lấy tên khách hàng từ comboBox
+                        string maKhach = comboBoxkhach.Text;
+
+                        // Bước 2: Kiểm tra xem bàn có hóa đơn chưa thanh toán không
+                        int billId = GetCurrentBillId();
+                        if (billId == -1)
+                        {
+                            // Nếu chưa có hóa đơn, tạo hóa đơn mới
+                            billId = CreateNewBill(maKhach);
+                            if (billId == -1)
+                            {
+                                throw new Exception("Không thể tạo hóa đơn mới.");
+                            }
+                            MessageBox.Show($"Hóa đơn mới được tạo với bill_id: {billId}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Bàn này đã có hóa đơn chưa thanh toán.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                 }
                 else
@@ -378,14 +422,13 @@ namespace Hadalao_Hotpot
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
             }
         }
 
         private void button_thanhtoan_Click(object sender, EventArgs e)
         {
             // Hiển thị thông báo xác nhận thanh toán
-            DialogResult confirmationResult = MessageBox.Show("Bạn chắc chắn muốn thanh toán?", "Thông báo", MessageBoxButtons.YesNo);
+            DialogResult confirmationResult = MessageBox.Show("Bạn có chắc muốn tạo hóa đơn?", "Thông báo", MessageBoxButtons.YesNo);
             if (confirmationResult == DialogResult.Yes)
             {
                 // Đặt trạng thái ban đầu sau thanh toán
@@ -404,96 +447,82 @@ namespace Hadalao_Hotpot
                 // Vô hiệu hóa nút thanh toán
                 button_thanhtoan.Enabled = false;
 
-                // Tạo lệnh SQL để tìm MAKH từ TENKH
-                string findCustomerSql = "SELECT MAKH FROM KHACH WHERE TENKH = @TENKH";
-                cmd = connection.CreateCommand();
-                cmd.CommandText = findCustomerSql;
-                cmd.Parameters.AddWithValue("@TENKH", comboBoxkhach.Text);  // Lấy tên khách hàng từ comboBox
-
-                // Thực hiện truy vấn để lấy MAKH từ TENKH
-                object customerId = cmd.ExecuteScalar();
-                if (customerId == null)
+                try
                 {
-                    // Nếu không tìm thấy mã khách hàng tương ứng với tên, thông báo lỗi và dừng lại
-                    MessageBox.Show("Không tìm thấy khách hàng với tên này.");
-                    return;
-                }
-
-                // Lấy MAKH từ kết quả truy vấn
-                string maKhach = customerId.ToString();
-
-                // Kiểm tra xem hóa đơn đã tồn tại chưa
-                string checkBillQuery = "SELECT bill_id FROM bill WHERE MABAN = @MABAN";
-                cmd.CommandText = checkBillQuery;
-                cmd.Parameters.Clear();
-                cmd.Parameters.AddWithValue("@MABAN", tableName);  // Lấy tên bàn hiện tại
-
-                object existingBillId = cmd.ExecuteScalar();
-                int billId = -1;
-
-                if (existingBillId != null)
-                {
-                    billId = Convert.ToInt32(existingBillId);  // Nếu hóa đơn đã tồn tại, lấy bill_id hiện tại
-                }
-                else
-                {
-                    // Nếu không có hóa đơn, tạo hóa đơn mới
-                    string insertBillSql = "INSERT INTO bill (payment_time, MABAN, MAKH, total) " +
-                                            "VALUES (GETDATE(), @TENBAN, @MAKH, 0); " +
-                                            "SELECT SCOPE_IDENTITY();";  // Ghi giá trị 0 vào total lúc tạo hóa đơn
-
-                    cmd.CommandText = insertBillSql;
-                    cmd.Parameters.Clear();  // Xóa các tham số cũ
-                    cmd.Parameters.AddWithValue("@TENBAN", tableName);
-                    cmd.Parameters.AddWithValue("@MAKH", maKhach);  // Sử dụng MAKH vừa tìm được
-
-                    // Lấy bill_id vừa được chèn vào bảng bill
-                    object billIdObj = cmd.ExecuteScalar();
-                    if (billIdObj != null)
+                    // Kiểm tra và mở kết nối cơ sở dữ liệu nếu chưa mở
+                    if (connection.State != System.Data.ConnectionState.Open)
                     {
-                        billId = Convert.ToInt32(billIdObj);
+                        connection.Open();
+                    }
+
+                    // Kiểm tra xem có `bill_id` hiện tại không (đã được tạo từ trước khi đặt bàn)
+                    string checkBillQuery = "SELECT bill_id FROM bill WHERE MABAN = @MABAN";
+                    cmd = connection.CreateCommand();
+                    cmd.CommandText = checkBillQuery;
+                    cmd.Parameters.AddWithValue("@MABAN", tableName);  // Lấy tên bàn hiện tại
+
+                    object existingBillId = cmd.ExecuteScalar();
+                    int billId = -1;
+
+                    if (existingBillId != null)
+                    {
+                        billId = Convert.ToInt32(existingBillId);  // Nếu hóa đơn đã tồn tại, lấy bill_id hiện tại
                     }
                     else
                     {
-                        MessageBox.Show("Lỗi khi tạo hóa đơn.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // Nếu không có hóa đơn, thông báo lỗi
+                        MessageBox.Show("Hóa đơn chưa được tạo. Vui lòng tạo hóa đơn trước khi thanh toán.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
+
+                    // Gọi stored procedure để cập nhật tổng tiền của hóa đơn
+                    cmd.CommandText = "EXEC pr_UpdateBillTotal @bill_id";
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@bill_id", billId);
+                    cmd.ExecuteNonQuery();  // Thực thi stored procedure để tính tổng tiền và cập nhật vào bảng bill
+
+                    // Lấy lại giá trị total từ bảng bill sau khi cập nhật
+                    string getTotalSql = "SELECT total FROM bill WHERE bill_id = @bill_id";
+                    cmd.CommandText = getTotalSql;
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@bill_id", billId);
+
+                    object totalObj = cmd.ExecuteScalar();
+                    decimal total = 0;
+                    if (totalObj != null)
+                    {
+                        total = Convert.ToDecimal(totalObj);  // Lấy giá trị total từ cơ sở dữ liệu
+                    }
+
+                    // Hiển thị tổng tiền trong TextBox
+                    textBox_total.Text = total.ToString("N2");  // Định dạng số thành 2 chữ số thập phân
+
+                    // Hiển thị thông báo thanh toán thành công
+                    MessageBox.Show("Đã thanh toán thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Xóa dữ liệu trong file nếu có
+                    string filePath = "C:\\Users\\XuanHoang\\Desktop\\Project\\Hadalao_Hotpot\\Hadalao_Hotpot\\SavedData\\" + tableName + "data.txt";
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                        MessageBox.Show("Đã xóa dữ liệu từ file.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
-
-                // Gọi stored procedure để cập nhật tổng tiền của hóa đơn
-                cmd.CommandText = "EXEC pr_UpdateBillTotal @bill_id";
-                cmd.Parameters.Clear();
-                cmd.Parameters.AddWithValue("@bill_id", billId);
-                cmd.ExecuteNonQuery();  // Thực thi stored procedure để tính tổng tiền và cập nhật vào bảng bill
-
-                // Lấy lại giá trị total từ bảng bill sau khi cập nhật
-                string getTotalSql = "SELECT total FROM bill WHERE bill_id = @bill_id";
-                cmd.CommandText = getTotalSql;
-                cmd.Parameters.Clear();
-                cmd.Parameters.AddWithValue("@bill_id", billId);
-
-                object totalObj = cmd.ExecuteScalar();
-                decimal total = 0;
-                if (totalObj != null)
+                catch (Exception ex)
                 {
-                    total = Convert.ToDecimal(totalObj);  // Lấy giá trị total từ cơ sở dữ liệu
+                    MessageBox.Show("Đã xảy ra lỗi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-
-                // Truyền giá trị total vào textBox_total
-                textBox_total.Text = total.ToString("N2");  // Định dạng số thành 2 chữ số thập phân
-
-                // Hiển thị thông báo thanh toán thành công
-                MessageBox.Show("Đã thanh toán thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Xóa dữ liệu trong file nếu có
-                string filePath = "C:\\Users\\XuanHoang\\Desktop\\Project\\Hadalao_Hotpot\\Hadalao_Hotpot\\SavedData\\" + tableName + "data.txt";
-                if (File.Exists(filePath))
+                finally
                 {
-                    File.Delete(filePath);
-                    MessageBox.Show("Đã xóa dữ liệu từ file.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // Đảm bảo đóng kết nối sau khi thực hiện xong
+                    if (connection.State == System.Data.ConnectionState.Open)
+                    {
+                        connection.Close();
+                    }
                 }
             }
         }
+
 
 
 

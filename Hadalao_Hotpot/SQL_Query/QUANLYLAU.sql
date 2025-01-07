@@ -71,7 +71,7 @@ drop table bill
 
 drop table bill_info
 
-
+use QUANLYLAU
 INSERT INTO bill (payment_time, MABAN, customer_name,total) VALUES (GETDATE(), @tableName, @emp_id, @customerName, @total);SELECT SCOPE_IDENTITY() AS LastInsertedID;
 
 
@@ -415,24 +415,8 @@ END;
 EXEC pr_UpdateBillTotal @bill_id = 4; 
 select *from bill
 select *from bill_info
---2.2 procedure thêm đồ ăn vào trong hóa đơn
-create PROCEDURE pr_AddFoodToBill
-    @bill_id INT,
-    @food_id INT,
-    @quantity INT
-AS
-BEGIN
-    INSERT INTO bill_info (bill_id, food_id, quantity)
-    VALUES (@bill_id, @food_id, @quantity);
-    DECLARE @total DECIMAL(10, 2)
-    SET @total = dbo.fn_Tongbillthanhtoan(@bill_id)
-    UPDATE bill
-    SET total = @total
-    WHERE bill_id = @bill_id;
-END;
-drop 
-exec pr_AddFoodToBill @bill_id =1 ,@food_id =3 , @quantity =4
---2.3 proc
+
+--2.2 proc
 CREATE PROCEDURE pr_GetTongThuNhap
 AS
 BEGIN
@@ -633,19 +617,6 @@ delete from bill where bill_id = 1
 DELETE FROM bill_info WHERE bill_id = 22
 select *from bill
 select *from bill_info 
-
-CREATE TRIGGER trg_UpdateTongThuNhap
-ON bill
-AFTER INSERT, DELETE
-AS
-BEGIN
-    DECLARE @tongThuNhap DECIMAL(10, 2);
-
-    SET @tongThuNhap = dbo.fn_TongThuNhap();
-  
-    
-END;
-drop trigger trg_UpdateTongThuNhap
 
 
 select *from bill

@@ -7,7 +7,7 @@ namespace Hadalao_Hotpot
 {
     public partial class HoaDonForm : Form
     {
-        string chuoiketnoi = "Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
+        string chuoiketnoi = "Data Source=DESKTOP-4UUFE49;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
 
         public HoaDonForm()
         {
@@ -162,13 +162,27 @@ namespace Hadalao_Hotpot
         {
             try
             {
+                // Kiểm tra xem textBox1 có trống không hoặc có phải là một số hợp lệ
+                if (string.IsNullOrWhiteSpace(textBox1.Text))
+                {
+                    MessageBox.Show("Vui lòng nhập mã hóa đơn.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                int billId;
+                if (!int.TryParse(textBox1.Text, out billId))  // Kiểm tra nếu mã hóa đơn là một số hợp lệ
+                {
+                    MessageBox.Show("Mã hóa đơn không hợp lệ, vui lòng nhập lại.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 using (SqlConnection connection = new SqlConnection(chuoiketnoi))
                 {
                     connection.Open();
 
                     SqlCommand sqlCommand = connection.CreateCommand();
-                    sqlCommand.CommandText = "SELECT * FROM bill_info WHERE bill_id = @bill_id";
-                    sqlCommand.Parameters.AddWithValue("@bill_id", textBox1.Text); // textBox1.Text là mã hóa đơn
+                    sqlCommand.CommandText = "select *from vw_Billall WHERE bill_id = @bill_id";
+                    sqlCommand.Parameters.AddWithValue("@bill_id", billId); // Sử dụng billId đã kiểm tra hợp lệ
 
                     SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand);
                     DataTable dataTable = new DataTable();
@@ -179,14 +193,25 @@ namespace Hadalao_Hotpot
 
                     // Gán DataTable cho DataGridView
                     dataGridView1.DataSource = dataTable;
+
+                    if (dataTable.Rows.Count == 0)
+                    {
+                        MessageBox.Show("Không tìm thấy thông tin hóa đơn với mã này.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
             }
             catch (SqlException ex)
             {
                 // Hiển thị thông báo lỗi nếu có
-                MessageBox.Show("Nhập sai mã hóa đơn, vui lòng nhập lại");
+                MessageBox.Show("Đã xảy ra lỗi khi truy vấn dữ liệu: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                // Xử lý các lỗi khác
+                MessageBox.Show("Đã xảy ra lỗi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void panel2_Paint(object sender, PaintEventArgs e)
         {
@@ -506,6 +531,11 @@ namespace Hadalao_Hotpot
         }
 
         private void btnSua_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
         }
