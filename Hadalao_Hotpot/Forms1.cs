@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Data.SqlClient;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
+using System.Windows.Forms;
 namespace Hadalao_Hotpot
 {
     public partial class Forms1 : Form
@@ -20,12 +13,12 @@ namespace Hadalao_Hotpot
         {
             InitializeComponent();
         }
-     
+
         private void QLKH_Load(object sender, EventArgs e)
         {
             conn = new SqlConnection(chuoiketnoi);
             conn.Open();
-            
+
             HienThi();
         }
         public void HienThi()
@@ -340,21 +333,21 @@ namespace Hadalao_Hotpot
         }
 
         private void btnDoiDiem_Click(object sender, EventArgs e)
-{
-    try
-    {
-        // Kiểm tra kết nối
-        if (conn == null || conn.State == ConnectionState.Closed)
         {
-            conn = new SqlConnection(chuoiketnoi);
-            conn.Open();
-        }
+            try
+            {
+                // Kiểm tra kết nối
+                if (conn == null || conn.State == ConnectionState.Closed)
+                {
+                    conn = new SqlConnection(chuoiketnoi);
+                    conn.Open();
+                }
 
-        // Lấy mã khách hàng từ giao diện (giả sử có TextBox hoặc ComboBox)
-        string maKH = txtMAKH.Text.Trim(); // Thay txtMaKH bằng tên của điều khiển nhập mã khách hàng
+                // Lấy mã khách hàng từ giao diện (giả sử có TextBox hoặc ComboBox)
+                string maKH = txtMAKH.Text.Trim(); // Thay txtMaKH bằng tên của điều khiển nhập mã khách hàng
 
-        // Câu lệnh SQL để cập nhật cột Discount theo mã khách hàng
-        string sqlUpdateDiscount = @"
+                // Câu lệnh SQL để cập nhật cột Discount theo mã khách hàng
+                string sqlUpdateDiscount = @"
         UPDATE KHACH
 SET 
   Discount = 
@@ -378,28 +371,28 @@ SET
 WHERE DIEM >= 100 AND MAKH = @MAKH";
 
 
-        // Thực hiện câu lệnh SQL
-        using (SqlCommand cmd = new SqlCommand(sqlUpdateDiscount, conn))
-        {
-            // Thêm tham số @MAKH
-            cmd.Parameters.AddWithValue("@MAKH", maKH);
+                // Thực hiện câu lệnh SQL
+                using (SqlCommand cmd = new SqlCommand(sqlUpdateDiscount, conn))
+                {
+                    // Thêm tham số @MAKH
+                    cmd.Parameters.AddWithValue("@MAKH", maKH);
 
-            int rowsAffected = cmd.ExecuteNonQuery(); // Số dòng được cập nhật
-            MessageBox.Show($"Cập nhật thành công {rowsAffected} khách hàng.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    int rowsAffected = cmd.ExecuteNonQuery(); // Số dòng được cập nhật
+                    MessageBox.Show($"Cập nhật thành công {rowsAffected} khách hàng.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                // Tải lại dữ liệu trên giao diện
+                HienThi();
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Đã xảy ra lỗi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
-
-        // Tải lại dữ liệu trên giao diện
-        HienThi();
-    }
-    catch (SqlException ex)
-    {
-        MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-    }
-    catch (Exception ex)
-    {
-        MessageBox.Show("Đã xảy ra lỗi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-    }
-}
 
     }
 }
