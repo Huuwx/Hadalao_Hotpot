@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Data.SqlClient;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
+using System.Windows.Forms;
 namespace Hadalao_Hotpot
 {
     public partial class Forms1 : Form
     {
-        string chuoiketnoi = "Data Source=DESKTOP-0V5FIJG;Initial Catalog=QUANLYLAU;Integrated Security=True";
+        string chuoiketnoi = @"Data Source=DESKTOP-1ST7HQB\DANGHUONG;Initial Catalog=QUANLYLAU1;Integrated Security=True";
         SqlConnection conn = null;
         int close = 0;
         public Forms1()
@@ -25,11 +18,12 @@ namespace Hadalao_Hotpot
         {
             conn = new SqlConnection(chuoiketnoi);
             conn.Open();
+
             HienThi();
         }
         public void HienThi()
         {
-            string sqlSelect = "SELECT *FROM KHACH";
+            string sqlSelect = "SELECT MAKH, TENKH,SDT, TUOI, SOLAN,dbo.GetCustomerStatus(SOLAN) as TINHTRANG ,DIEM, Discount FROM KHACH";
             SqlCommand cmd = new SqlCommand(sqlSelect, conn);
             SqlDataAdapter adapter = new SqlDataAdapter(cmd);
             DataTable data = new DataTable();
@@ -37,6 +31,7 @@ namespace Hadalao_Hotpot
 
             dtgdskh.DataSource = data;
         }
+
 
         private void QLKH_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -52,37 +47,81 @@ namespace Hadalao_Hotpot
         {
             try
             {
+                // Kiểm tra dữ liệu đầu vào
                 if (string.IsNullOrEmpty(txtMAKH.Text) || string.IsNullOrEmpty(txtTENKH.Text)
-                     || string.IsNullOrEmpty(txtSDT.Text) || string.IsNullOrEmpty(txtTUOI.Text))
+                    || string.IsNullOrEmpty(txtSDT.Text) || string.IsNullOrEmpty(txtTUOI.Text))
                 {
-                    MessageBox.Show("Dữ liệu không được để trống !", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Dữ liệu không được để trống!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
                 }
-                else
-                {
-                    string sqlTHEM = "INSERT INTO KHACH VALUES(@MAKH,@TENKH,@SDT,@TUOI)";
-                    SqlCommand cmd = new SqlCommand(sqlTHEM, conn);
-                    cmd.Parameters.AddWithValue("MAKH", txtMAKH.Text);
-                    cmd.Parameters.AddWithValue("TENKH", txtTENKH.Text);
-                    int sdt = int.Parse(txtSDT.Text);
-                    cmd.Parameters.AddWithValue("SDT", "0" + sdt);
-                    int age = int.Parse(txtTUOI.Text);
-                    cmd.Parameters.AddWithValue("TUOI", age);
 
-                    cmd.ExecuteNonQuery();
+                // Kiểm tra kiểu dữ liệu hợp lệ
+                if (!int.TryParse(txtTUOI.Text, out int tuoi) || tuoi <= 0)
+                {
+                    MessageBox.Show("Tuổi phải là số nguyên dương!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Tạo kết nối đến cơ sở dữ liệu
+                using (SqlConnection conn = new SqlConnection(chuoiketnoi))
+                {
+                    conn.Open();
+
+                    // Tạo command để gọi thủ tục lưu khách hàng mới
+                    using (SqlCommand cmd = new SqlCommand("AddKhachHangWithCondition", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        // Thêm các tham số vào thủ tục
+                        cmd.Parameters.AddWithValue("@MAKH", txtMAKH.Text.Trim());
+                        cmd.Parameters.AddWithValue("@TENKH", txtTENKH.Text.Trim());
+                        cmd.Parameters.AddWithValue("@SDT", txtSDT.Text.Trim());
+                        cmd.Parameters.AddWithValue("@TUOI", tuoi);
+
+                        // Thực thi thủ tục
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    // Gọi stored procedure UpdateCustomerPointsById để cập nhật điểm cho khách hàng mới
+                    using (SqlCommand updateCmd = new SqlCommand("UpdateCustomerPointsById", conn))
+                    {
+                        updateCmd.CommandType = CommandType.StoredProcedure;
+
+                        // Thêm tham số MAKH để cập nhật điểm cho khách hàng vừa thêm
+                        updateCmd.Parameters.AddWithValue("@MAKH", txtMAKH.Text.Trim());
+
+                        // Thực thi thủ tục
+                        updateCmd.ExecuteNonQuery();
+                    }
+
+                    // Cập nhật giao diện
                     HienThi();
+
+                    // Thông báo thành công
+                    MessageBox.Show("Thêm khách hàng và cập nhật điểm thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-
             }
-
             catch (SqlException ex)
             {
+                // Xử lý lỗi SQL
                 MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (FormatException ex)
             {
-                MessageBox.Show("Lỗi kiểu dữ liệu : " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // Xử lý lỗi kiểu dữ liệu
+                MessageBox.Show("Lỗi kiểu dữ liệu: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi không xác định
+                MessageBox.Show("Đã xảy ra lỗi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+
+
+
+
 
         private void btnSua_Click(object sender, EventArgs e)
         {
@@ -147,7 +186,8 @@ namespace Hadalao_Hotpot
                     txtTENKH.Text = selectedRow.Cells["TENKH"].Value.ToString();
                     txtSDT.Text = selectedRow.Cells["SDT"].Value.ToString();
                     txtTUOI.Text = selectedRow.Cells["TUOI"].Value.ToString();
-
+                    txtSOLAN.Text = selectedRow.Cells["SOLAN"].Value.ToString();
+                    txtTINHTRANG.Text = selectedRow.Cells["TINHTRANG"].Value.ToString();
                 }
             }
             catch (Exception ex)
@@ -166,7 +206,7 @@ namespace Hadalao_Hotpot
                 }
                 else
                 {
-                    string sqlTIMKIEM = "SELECT *FROM KHACH WHERE MAKH=@MAKH";
+                    string sqlTIMKIEM = "SELECT * FROM View_TimKiemKhachHang WHERE MAKH = @MAKH";
                     SqlCommand cmd = new SqlCommand(sqlTIMKIEM, conn);
                     cmd.Parameters.AddWithValue("MAKH", txtTIMKIEM.Text);
                     cmd.Parameters.AddWithValue("TENKH", txtTENKH.Text);
@@ -187,8 +227,202 @@ namespace Hadalao_Hotpot
 
         private void btnTaiLai_Click(object sender, EventArgs e)
         {
+            txtMAKH.Text = "";
+            txtTENKH.Text = "";
+            txtSDT.Text = "";
+            txtTUOI.Text = "";
             HienThi();
         }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                // Kiểm tra kết nối
+                if (conn == null || conn.State == ConnectionState.Closed)
+                {
+                    conn = new SqlConnection(chuoiketnoi);
+                    conn.Open();
+                }
+
+                // Lấy giá trị được chọn trong ComboBox
+                string selectedValue = comboBox1.SelectedItem.ToString();
+
+                if (selectedValue == "Khách ghé qua nhiều nhất")
+                {
+                    string sqlCursor = @"
+                DECLARE SOLANMAX CURSOR SCROLL FOR
+                SELECT TENKH, SOLAN FROM KHACH;
+
+                OPEN SOLANMAX;
+
+                DECLARE @tenkh NVARCHAR(200), @solan INT, @max INT;
+                SET @max = 0;
+
+                FETCH FIRST FROM SOLANMAX INTO @tenkh, @solan;
+                WHILE (@@FETCH_STATUS = 0)
+                BEGIN
+                    IF (@solan > @max)
+                        SET @max = @solan;
+                    FETCH NEXT FROM SOLANMAX INTO @tenkh, @solan;
+                END;
+
+                -- Lấy danh sách khách hàng có số lần bằng @max
+                FETCH FIRST FROM SOLANMAX INTO @tenkh, @solan;
+                DECLARE @result TABLE (TENKH NVARCHAR(200), SOLAN INT);
+                WHILE (@@FETCH_STATUS = 0)
+                BEGIN
+                    IF (@solan = @max)
+                        INSERT INTO @result VALUES (@tenkh, @solan);
+                    FETCH NEXT FROM SOLANMAX INTO @tenkh, @solan;
+                END;
+
+                CLOSE SOLANMAX;
+                DEALLOCATE SOLANMAX;
+
+                SELECT * FROM @result;";
+
+                    // Thực hiện truy vấn và đổ dữ liệu vào DataGridView
+                    SqlCommand cmd = new SqlCommand(sqlCursor, conn);
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+
+                    DataTable dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+
+                    // Hiển thị dữ liệu lên DataGridView
+                    dtgdskh.DataSource = dataTable;
+
+                    // Tùy chỉnh thông báo nếu không có dữ liệu
+                    if (dataTable.Rows.Count == 0)
+                    {
+                        MessageBox.Show("Không có khách hàng nào phù hợp.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else
+                {
+                    string query;
+                    switch (selectedValue)
+                    {
+                        case "Trên 18 tuổi":
+                            query = "SELECT * FROM View_KhachTren18";
+                            break;
+                        case "Dưới 18 tuổi":
+                            query = "SELECT * FROM View_KhachDuoi18";
+                            break;
+                        case "All":
+                            query = "SELECT * FROM KHACH";
+                            break;
+                        default:
+                            throw new Exception("Mục không hợp lệ.");
+                    }
+
+                    try
+                    {
+                        // Khởi tạo SqlCommand
+                        SqlCommand cmd = new SqlCommand(query, conn);
+
+                        // Khởi tạo SqlDataAdapter để lấy dữ liệu
+                        SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+
+                        // Tạo DataTable để chứa dữ liệu
+                        DataTable dataTable = new DataTable();
+
+                        // Đổ dữ liệu vào DataTable
+                        adapter.Fill(dataTable);
+
+                        // Hiển thị dữ liệu lên DataGridView
+                        dtgdskh.DataSource = dataTable;
+
+                        // Tùy chỉnh thông báo nếu không có dữ liệu
+                        if (dataTable.Rows.Count == 0)
+                        {
+                            MessageBox.Show("Không có dữ liệu phù hợp.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Lỗi khi thực hiện truy vấn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnDoiDiem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Kiểm tra kết nối
+                if (conn == null || conn.State == ConnectionState.Closed)
+                {
+                    conn = new SqlConnection(chuoiketnoi);
+                    conn.Open();
+                }
+
+                // Lấy mã khách hàng từ giao diện (giả sử có TextBox hoặc ComboBox)
+                string maKH = txtMAKH.Text.Trim(); // Thay txtMaKH bằng tên của điều khiển nhập mã khách hàng
+
+                // Câu lệnh SQL để cập nhật cột Discount theo mã khách hàng
+                string sqlUpdateDiscount = @"
+        UPDATE KHACH
+SET 
+  Discount = 
+    CASE 
+      WHEN DIEM >= 1000 THEN 100
+      WHEN DIEM >= 400 THEN 40
+      WHEN DIEM >= 300 THEN 30
+      WHEN DIEM >= 200 THEN 20
+      WHEN DIEM >= 100 THEN 10
+      ELSE Discount
+    END,
+  DIEM = 
+    CASE 
+      WHEN DIEM >= 1000 THEN DIEM - 1000
+      WHEN DIEM >= 400 THEN DIEM - 400
+      WHEN DIEM >= 300 THEN DIEM - 300
+      WHEN DIEM >= 200 THEN DIEM - 200
+      WHEN DIEM >= 100 THEN DIEM - 100
+      ELSE DIEM
+    END
+WHERE DIEM >= 100 AND MAKH = @MAKH";
+
+
+                // Thực hiện câu lệnh SQL
+                using (SqlCommand cmd = new SqlCommand(sqlUpdateDiscount, conn))
+                {
+                    // Thêm tham số @MAKH
+                    cmd.Parameters.AddWithValue("@MAKH", maKH);
+
+                    int rowsAffected = cmd.ExecuteNonQuery(); // Số dòng được cập nhật
+                    MessageBox.Show($"Cập nhật thành công {rowsAffected} khách hàng.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                // Tải lại dữ liệu trên giao diện
+                HienThi();
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Đã xảy ra lỗi: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
     }
 }
 

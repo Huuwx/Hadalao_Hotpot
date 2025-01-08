@@ -539,5 +539,10 @@ namespace Hadalao_Hotpot
         {
 
         }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

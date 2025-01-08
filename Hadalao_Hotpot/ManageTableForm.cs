@@ -40,5 +40,10 @@ namespace Hadalao_Hotpot
         {
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
