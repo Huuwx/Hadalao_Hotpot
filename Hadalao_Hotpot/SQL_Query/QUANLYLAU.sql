@@ -47,6 +47,8 @@ drop table bill
 
 drop table bill_info
 
+select * from bill_info
+
 
 INSERT INTO bill (payment_time, table_code, customer_name,total) VALUES (GETDATE(), @tableName, @emp_id, @customerName, @total);SELECT SCOPE_IDENTITY() AS LastInsertedID;
 
