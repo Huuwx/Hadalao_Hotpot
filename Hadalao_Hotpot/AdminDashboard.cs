@@ -38,7 +38,7 @@ namespace Hadalao_Hotpot
 
         private void button1_Click(object sender, EventArgs e)
         {
-            openChildForm(new HomeForm());
+            openChildForm(new HoaDonForm());
         }
 
         private void AdminDashboard_Load(object sender, EventArgs e)

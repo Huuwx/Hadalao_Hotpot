@@ -32,9 +32,6 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.dgv = new System.Windows.Forms.DataGridView();
-            this.ten_col = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.soluong_col = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column_price = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel2 = new System.Windows.Forms.Panel();
             this.textBox_price = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -47,12 +44,15 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label_fname = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.comboBoxkhach = new System.Windows.Forms.ComboBox();
             this.textBox_total = new System.Windows.Forms.TextBox();
             this.label_total = new System.Windows.Forms.Label();
             this.button_datban = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
-            this.textBox_tenkhachhang = new System.Windows.Forms.TextBox();
             this.bindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.ten_col = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.soluong_col = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.price_col = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).BeginInit();
@@ -78,6 +78,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 73.98844F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(797, 499);
             this.tableLayoutPanel1.TabIndex = 0;
+            this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint);
             // 
             // panel1
             // 
@@ -96,7 +97,7 @@
             this.dgv.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ten_col,
             this.soluong_col,
-            this.Column_price});
+            this.price_col});
             this.dgv.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.dgv.Location = new System.Drawing.Point(0, 0);
@@ -108,25 +109,7 @@
             this.dgv.Size = new System.Drawing.Size(507, 364);
             this.dgv.TabIndex = 0;
             this.dgv.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellClick);
-            // 
-            // ten_col
-            // 
-            this.ten_col.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ten_col.HeaderText = "Tên";
-            this.ten_col.Name = "ten_col";
-            this.ten_col.ReadOnly = true;
-            // 
-            // soluong_col
-            // 
-            this.soluong_col.HeaderText = "Số lượng";
-            this.soluong_col.Name = "soluong_col";
-            this.soluong_col.ReadOnly = true;
-            // 
-            // Column_price
-            // 
-            this.Column_price.HeaderText = "Giá tiền";
-            this.Column_price.Name = "Column_price";
-            this.Column_price.ReadOnly = true;
+            this.dgv.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellContentClick);
             // 
             // panel2
             // 
@@ -170,7 +153,7 @@
             this.button_thanhtoan.Name = "button_thanhtoan";
             this.button_thanhtoan.Size = new System.Drawing.Size(108, 40);
             this.button_thanhtoan.TabIndex = 7;
-            this.button_thanhtoan.Text = "Thanh toán";
+            this.button_thanhtoan.Text = "Xác nhận";
             this.button_thanhtoan.UseVisualStyleBackColor = true;
             this.button_thanhtoan.Click += new System.EventHandler(this.button_thanhtoan_Click);
             // 
@@ -240,16 +223,26 @@
             // 
             // panel3
             // 
+            this.panel3.Controls.Add(this.comboBoxkhach);
             this.panel3.Controls.Add(this.textBox_total);
             this.panel3.Controls.Add(this.label_total);
             this.panel3.Controls.Add(this.button_datban);
             this.panel3.Controls.Add(this.label1);
-            this.panel3.Controls.Add(this.textBox_tenkhachhang);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(287, 3);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(507, 123);
             this.panel3.TabIndex = 2;
+            this.panel3.Paint += new System.Windows.Forms.PaintEventHandler(this.panel3_Paint);
+            // 
+            // comboBoxkhach
+            // 
+            this.comboBoxkhach.FormattingEnabled = true;
+            this.comboBoxkhach.Location = new System.Drawing.Point(95, 35);
+            this.comboBoxkhach.Name = "comboBoxkhach";
+            this.comboBoxkhach.Size = new System.Drawing.Size(162, 21);
+            this.comboBoxkhach.TabIndex = 5;
+            this.comboBoxkhach.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // textBox_total
             // 
@@ -292,17 +285,33 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Tên khách hàng";
             // 
-            // textBox_tenkhachhang
-            // 
-            this.textBox_tenkhachhang.Location = new System.Drawing.Point(95, 34);
-            this.textBox_tenkhachhang.Name = "textBox_tenkhachhang";
-            this.textBox_tenkhachhang.Size = new System.Drawing.Size(234, 20);
-            this.textBox_tenkhachhang.TabIndex = 0;
-            this.textBox_tenkhachhang.TextChanged += new System.EventHandler(this.textBox_tenkhachhang_TextChanged);
-            // 
             // bindingSource1
             // 
             this.bindingSource1.CurrentChanged += new System.EventHandler(this.bindingSource1_CurrentChanged);
+            // 
+            // ten_col
+            // 
+            this.ten_col.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ten_col.HeaderText = "Tên";
+            this.ten_col.MinimumWidth = 6;
+            this.ten_col.Name = "ten_col";
+            this.ten_col.ReadOnly = true;
+            // 
+            // soluong_col
+            // 
+            this.soluong_col.HeaderText = "Số lượng";
+            this.soluong_col.MinimumWidth = 6;
+            this.soluong_col.Name = "soluong_col";
+            this.soluong_col.ReadOnly = true;
+            this.soluong_col.Width = 125;
+            // 
+            // price_col
+            // 
+            this.price_col.HeaderText = "Giá tiền";
+            this.price_col.MinimumWidth = 6;
+            this.price_col.Name = "price_col";
+            this.price_col.ReadOnly = true;
+            this.price_col.Width = 125;
             // 
             // EditTableForm
             // 
@@ -339,19 +348,19 @@
         private System.Windows.Forms.Button button_delete;
         private System.Windows.Forms.Button button_edit;
         private System.Windows.Forms.Button button_add;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ten_col;
-        private System.Windows.Forms.DataGridViewTextBoxColumn soluong_col;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox_tenkhachhang;
         private System.Windows.Forms.ComboBox comboBox_food;
         private System.Windows.Forms.Button button_thanhtoan;
         private System.Windows.Forms.Button button_datban;
         private System.Windows.Forms.BindingSource bindingSource1;
         private System.Windows.Forms.TextBox textBox_price;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column_price;
         private System.Windows.Forms.Label label_total;
         private System.Windows.Forms.TextBox textBox_total;
+        private System.Windows.Forms.ComboBox comboBoxkhach;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ten_col;
+        private System.Windows.Forms.DataGridViewTextBoxColumn soluong_col;
+        private System.Windows.Forms.DataGridViewTextBoxColumn price_col;
     }
 }

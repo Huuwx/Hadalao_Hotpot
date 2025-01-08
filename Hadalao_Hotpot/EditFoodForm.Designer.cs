@@ -59,53 +59,60 @@
             this.panel1.Controls.Add(this.panel4);
             this.panel1.Controls.Add(this.panel3);
             this.panel1.Controls.Add(this.panel2);
-            this.panel1.Location = new System.Drawing.Point(12, 12);
+            this.panel1.Location = new System.Drawing.Point(16, 15);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(444, 300);
+            this.panel1.Size = new System.Drawing.Size(592, 369);
             this.panel1.TabIndex = 1;
             // 
             // btnCancel
             // 
-            this.btnCancel.Location = new System.Drawing.Point(260, 230);
+            this.btnCancel.Location = new System.Drawing.Point(347, 283);
+            this.btnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(118, 39);
+            this.btnCancel.Size = new System.Drawing.Size(157, 48);
             this.btnCancel.TabIndex = 6;
             this.btnCancel.Text = "Thoát";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(56, 230);
+            this.btnAdd.Location = new System.Drawing.Point(75, 283);
+            this.btnAdd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(118, 39);
+            this.btnAdd.Size = new System.Drawing.Size(157, 48);
             this.btnAdd.TabIndex = 5;
             this.btnAdd.Text = "Thêm";
             this.btnAdd.UseVisualStyleBackColor = true;
+            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
             // panel5
             // 
             this.panel5.Controls.Add(this.comboBox1);
             this.panel5.Controls.Add(this.lbTT);
-            this.panel5.Location = new System.Drawing.Point(3, 156);
+            this.panel5.Location = new System.Drawing.Point(4, 192);
+            this.panel5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(438, 45);
+            this.panel5.Size = new System.Drawing.Size(584, 55);
             this.panel5.TabIndex = 4;
             // 
             // comboBox1
             // 
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(133, 12);
+            this.comboBox1.Location = new System.Drawing.Point(177, 15);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(175, 21);
+            this.comboBox1.Size = new System.Drawing.Size(232, 24);
             this.comboBox1.TabIndex = 1;
             // 
             // lbTT
             // 
             this.lbTT.AutoSize = true;
             this.lbTT.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbTT.Location = new System.Drawing.Point(3, 12);
+            this.lbTT.Location = new System.Drawing.Point(4, 15);
+            this.lbTT.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbTT.Name = "lbTT";
-            this.lbTT.Size = new System.Drawing.Size(113, 24);
+            this.lbTT.Size = new System.Drawing.Size(143, 29);
             this.lbTT.TabIndex = 0;
             this.lbTT.Text = "Tình Trạng :";
             // 
@@ -113,25 +120,28 @@
             // 
             this.panel4.Controls.Add(this.numericUpDown1);
             this.panel4.Controls.Add(this.lbPrice);
-            this.panel4.Location = new System.Drawing.Point(3, 105);
+            this.panel4.Location = new System.Drawing.Point(4, 129);
+            this.panel4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(438, 45);
+            this.panel4.Size = new System.Drawing.Size(584, 55);
             this.panel4.TabIndex = 3;
             // 
             // numericUpDown1
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(133, 12);
+            this.numericUpDown1.Location = new System.Drawing.Point(177, 15);
+            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(128, 20);
+            this.numericUpDown1.Size = new System.Drawing.Size(171, 22);
             this.numericUpDown1.TabIndex = 1;
             // 
             // lbPrice
             // 
             this.lbPrice.AutoSize = true;
             this.lbPrice.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbPrice.Location = new System.Drawing.Point(3, 12);
+            this.lbPrice.Location = new System.Drawing.Point(4, 15);
+            this.lbPrice.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbPrice.Name = "lbPrice";
-            this.lbPrice.Size = new System.Drawing.Size(48, 24);
+            this.lbPrice.Size = new System.Drawing.Size(62, 29);
             this.lbPrice.TabIndex = 0;
             this.lbPrice.Text = "Giá :";
             // 
@@ -139,25 +149,28 @@
             // 
             this.panel3.Controls.Add(this.textBox2);
             this.panel3.Controls.Add(this.lbFoodName);
-            this.panel3.Location = new System.Drawing.Point(3, 54);
+            this.panel3.Location = new System.Drawing.Point(4, 66);
+            this.panel3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(438, 45);
+            this.panel3.Size = new System.Drawing.Size(584, 55);
             this.panel3.TabIndex = 2;
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(133, 12);
+            this.textBox2.Location = new System.Drawing.Point(177, 15);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(175, 20);
+            this.textBox2.Size = new System.Drawing.Size(232, 22);
             this.textBox2.TabIndex = 1;
             // 
             // lbFoodName
             // 
             this.lbFoodName.AutoSize = true;
             this.lbFoodName.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbFoodName.Location = new System.Drawing.Point(3, 12);
+            this.lbFoodName.Location = new System.Drawing.Point(4, 15);
+            this.lbFoodName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbFoodName.Name = "lbFoodName";
-            this.lbFoodName.Size = new System.Drawing.Size(126, 24);
+            this.lbFoodName.Size = new System.Drawing.Size(155, 29);
             this.lbFoodName.TabIndex = 0;
             this.lbFoodName.Text = "Tên Món Ăn :";
             // 
@@ -165,35 +178,39 @@
             // 
             this.panel2.Controls.Add(this.textBox1);
             this.panel2.Controls.Add(this.lbMTA);
-            this.panel2.Location = new System.Drawing.Point(3, 3);
+            this.panel2.Location = new System.Drawing.Point(4, 4);
+            this.panel2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(438, 45);
+            this.panel2.Size = new System.Drawing.Size(584, 55);
             this.panel2.TabIndex = 1;
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(133, 12);
+            this.textBox1.Location = new System.Drawing.Point(177, 15);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(175, 20);
+            this.textBox1.Size = new System.Drawing.Size(232, 22);
             this.textBox1.TabIndex = 1;
             // 
             // lbMTA
             // 
             this.lbMTA.AutoSize = true;
             this.lbMTA.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lbMTA.Location = new System.Drawing.Point(3, 12);
+            this.lbMTA.Location = new System.Drawing.Point(4, 15);
+            this.lbMTA.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lbMTA.Name = "lbMTA";
-            this.lbMTA.Size = new System.Drawing.Size(124, 24);
+            this.lbMTA.Size = new System.Drawing.Size(152, 29);
             this.lbMTA.TabIndex = 0;
             this.lbMTA.Text = "Mã Thức Ăn :";
             // 
             // EditFoodForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(468, 319);
+            this.ClientSize = new System.Drawing.Size(624, 393);
             this.Controls.Add(this.panel1);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "EditFoodForm";
             this.Text = "EditFoodForm";
             this.panel1.ResumeLayout(false);
