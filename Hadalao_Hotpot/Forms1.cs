@@ -251,52 +251,52 @@ namespace Hadalao_Hotpot
                 if (selectedValue == "Khách ghé qua nhiều nhất")
                 {
                     string sqlCursor = @"
-            DECLARE SOLANMAX CURSOR SCROLL FOR
-            SELECT TENKH, SOLAN FROM KHACH;
+                DECLARE SOLANMAX CURSOR SCROLL FOR
+                SELECT TENKH, SOLAN FROM KHACH;
 
-            OPEN SOLANMAX;
+                OPEN SOLANMAX;
 
-            DECLARE @tenkh NVARCHAR(200), @solan INT, @max INT;
-            SET @max = 0;
+                DECLARE @tenkh NVARCHAR(200), @solan INT, @max INT;
+                SET @max = 0;
 
-            FETCH FIRST FROM SOLANMAX INTO @tenkh, @solan;
-            WHILE (@@FETCH_STATUS = 0)
-            BEGIN
-                IF (@solan > @max)
-                    SET @max = @solan;
-                FETCH NEXT FROM SOLANMAX INTO @tenkh, @solan;
-            END;
+                FETCH FIRST FROM SOLANMAX INTO @tenkh, @solan;
+                WHILE (@@FETCH_STATUS = 0)
+                BEGIN
+                    IF (@solan > @max)
+                        SET @max = @solan;
+                    FETCH NEXT FROM SOLANMAX INTO @tenkh, @solan;
+                END;
 
-            -- Lấy danh sách khách hàng có số lần bằng @max
-            FETCH FIRST FROM SOLANMAX INTO @tenkh, @solan;
-            DECLARE @result NVARCHAR(MAX) = '';
-            WHILE (@@FETCH_STATUS = 0)
-            BEGIN
-                IF (@solan = @max)
-                    SET @result = @result + @tenkh + ', ';
-                FETCH NEXT FROM SOLANMAX INTO @tenkh, @solan;
-            END;
+                -- Lấy danh sách khách hàng có số lần bằng @max
+                FETCH FIRST FROM SOLANMAX INTO @tenkh, @solan;
+                DECLARE @result TABLE (TENKH NVARCHAR(200), SOLAN INT);
+                WHILE (@@FETCH_STATUS = 0)
+                BEGIN
+                    IF (@solan = @max)
+                        INSERT INTO @result VALUES (@tenkh, @solan);
+                    FETCH NEXT FROM SOLANMAX INTO @tenkh, @solan;
+                END;
 
-            CLOSE SOLANMAX;
-            DEALLOCATE SOLANMAX;
+                CLOSE SOLANMAX;
+                DEALLOCATE SOLANMAX;
 
-            SELECT CAST(@max AS NVARCHAR) AS MaxVisits, @result AS TopCustomers;";
+                SELECT * FROM @result;";
 
+                    // Thực hiện truy vấn và đổ dữ liệu vào DataGridView
                     SqlCommand cmd = new SqlCommand(sqlCursor, conn);
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
 
-                    if (reader.HasRows)
+                    DataTable dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+
+                    // Hiển thị dữ liệu lên DataGridView
+                    dtgdskh.DataSource = dataTable;
+
+                    // Tùy chỉnh thông báo nếu không có dữ liệu
+                    if (dataTable.Rows.Count == 0)
                     {
-                        reader.Read();
-                        string maxVisits = reader["MaxVisits"].ToString();
-                        string topCustomers = reader["TopCustomers"].ToString();
-
-                        MessageBox.Show($"Số lần ghé nhiều nhất: {maxVisits}\nKhách ghé nhiều nhất: {topCustomers}",
-                                        "Thông tin khách hàng",
-                                        MessageBoxButtons.OK,
-                                        MessageBoxIcon.Information);
+                        MessageBox.Show("Không có khách hàng nào phù hợp.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
-                    reader.Close();
                 }
                 else
                 {
@@ -315,7 +315,36 @@ namespace Hadalao_Hotpot
                         default:
                             throw new Exception("Mục không hợp lệ.");
                     }
+
+                    try
+                    {
+                        // Khởi tạo SqlCommand
+                        SqlCommand cmd = new SqlCommand(query, conn);
+
+                        // Khởi tạo SqlDataAdapter để lấy dữ liệu
+                        SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+
+                        // Tạo DataTable để chứa dữ liệu
+                        DataTable dataTable = new DataTable();
+
+                        // Đổ dữ liệu vào DataTable
+                        adapter.Fill(dataTable);
+
+                        // Hiển thị dữ liệu lên DataGridView
+                        dtgdskh.DataSource = dataTable;
+
+                        // Tùy chỉnh thông báo nếu không có dữ liệu
+                        if (dataTable.Rows.Count == 0)
+                        {
+                            MessageBox.Show("Không có dữ liệu phù hợp.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Lỗi khi thực hiện truy vấn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
+
             }
             catch (SqlException ex)
             {
