@@ -17,7 +17,7 @@ namespace Hadalao_Hotpot
     public partial class LoginForm : Form
     {
 
-        string connectionSTR = @"Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;Integrated Security=True";
+        string connectionSTR = @"Data Source=DESKTOP-0V5FIJG;Initial Catalog=QUANLYLAU;Integrated Security=True";
 
         public LoginForm()
         {

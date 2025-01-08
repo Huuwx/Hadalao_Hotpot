@@ -38,22 +38,22 @@ namespace Hadalao_Hotpot
 
         private void button1_Click(object sender, EventArgs e)
         {
-            openChildForm(new HomeForm());
+            openChildForm(new HoaDonForm());
         }
 
         private void AdminDashboard_Load(object sender, EventArgs e)
         {
-       if(this.role != "admin")
-{
-  button2.Enabled = false;
-  button5.Enabled = false;
-}
-            else
-            {
-                button3.Enabled = false;
-            }
+            //if (this.role != "admin")
+            //{
+            //    button2.Enabled = false;
+            //    button5.Enabled = false;
+            //}
+            //else
+            //{
+            //    button3.Enabled = false;
+            //}
         }
-        
+
 
         private void sidebarTimer_Tick(object sender, EventArgs e)
         {
@@ -79,7 +79,7 @@ namespace Hadalao_Hotpot
 
         private void menuButton_Click(object sender, EventArgs e)
         {
-            sidebarTimer.Start();   
+            sidebarTimer.Start();
         }
 
         private void sidebar_Paint(object sender, PaintEventArgs e)
@@ -96,7 +96,7 @@ namespace Hadalao_Hotpot
         private void button3_Click(object sender, EventArgs e)
         {
             openChildForm(new ManageTableForm(this.ID));
-            
+
         }
 
         private void button4_Click(object sender, EventArgs e)

@@ -24,6 +24,30 @@ namespace Hadalao_Hotpot
         public ManageFoodForm()
         {
             InitializeComponent();
+            InitializePlaceHolderFortxbSearch();
+        }
+
+        private void InitializePlaceHolderFortxbSearch()
+        {
+            // Xóa văn bản khi người dùng nhấn vào
+            this.SearchTb.Enter += (s, e) =>
+            {
+                if (this.SearchTb.Text == "Nhập tên món ăn...")
+                {
+                    this.SearchTb.Text = "";
+                    this.SearchTb.ForeColor = Color.Black;
+                }
+            };
+
+            // Hiển thị lại văn bản nếu người dùng không nhập
+            this.SearchTb.Leave += (s, e) =>
+            {
+                if (string.IsNullOrEmpty(this.SearchTb.Text))
+                {
+                    this.SearchTb.Text = "Nhập tên món ăn...";
+                    this.SearchTb.ForeColor = Color.Gray;
+                }
+            };
         }
 
         public void PrintFoodList()
@@ -56,10 +80,26 @@ namespace Hadalao_Hotpot
             dtgvFood.DataSource = data;
         }
 
+        public void PrintUnavailableFoodList()
+        {
+            string query = "SELECT * from fn_UnavailableFood()";
+
+            SqlCommand command = new SqlCommand(query, conn);
+
+            DataTable data = new DataTable();
+
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+            adapter.Fill(data);
+
+            dtgvFood.DataSource = data;
+        }
+
         private void AddFoodBtn_Click(object sender, EventArgs e)
         {
             AddAndEditFoodForm ae = new AddAndEditFoodForm();
             ae.Text = "Thêm";
+            ae.InitializeItemsForCbTT();
             ae.ShowDialog();
             PrintFoodList();
         }
@@ -69,6 +109,7 @@ namespace Hadalao_Hotpot
             int i = dtgvFood.CurrentRow.Index;
             AddAndEditFoodForm ae = new AddAndEditFoodForm();
             ae.Text = "Chỉnh Sửa";
+            ae.InitializeItemsForCbTT();
             ae.SetFoodDetails(
                     Convert.ToInt32(dtgvFood.Rows[i].Cells[0].Value),
                     dtgvFood.Rows[i].Cells[1].Value.ToString(),
@@ -86,16 +127,23 @@ namespace Hadalao_Hotpot
                 int i;
                 i = dtgvFood.CurrentRow.Index;
                 string food_idSTR = dtgvFood.Rows[i].Cells[0].Value.ToString();
-                Console.WriteLine( food_idSTR );
+                Console.WriteLine(food_idSTR);
                 try
                 {
                     string querydel = @"EXEC pr_DeleteFoodById @food_id";
 
                     SqlCommand cm = new SqlCommand(querydel, conn);
                     cm.Parameters.AddWithValue("@food_id", food_idSTR);
-                    cm.ExecuteNonQuery();
-                    MessageBox.Show("Xóa món ăn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    dtgvFood.Rows.RemoveAt(i);
+                    int rowAffected = cm.ExecuteNonQuery();
+                    if (rowAffected > 0)
+                    {
+                        MessageBox.Show("Xóa món ăn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        dtgvFood.Rows.RemoveAt(i);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Xóa món ăn thất bại!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
                 }
                 catch (SqlException ex)
                 {
@@ -164,7 +212,59 @@ namespace Hadalao_Hotpot
 
         private void availableFoodBtn_Click(object sender, EventArgs e)
         {
+            try
+            {
+                string query = "SELECT dbo.fn_TotalFoodByAvailability(@availability) AS TotalFood";
+                SqlCommand command = new SqlCommand(query, conn);
+                command.Parameters.AddWithValue("@availability", "Available");
+
+                var result = command.ExecuteScalar();
+                MessageBox.Show("Số lượng món ăn còn hàng: " + result.ToString(), "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
             PrintAvailableFoodList();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //string query = "SELECT dbo.fn_AverageFoodPrice() AS AveragePrice";
+            //SqlCommand command = new SqlCommand(query, conn);
+
+            //var result = command.ExecuteScalar();
+            //MessageBox.Show("Giá trung bình tất cả các món ăn: " + result.ToString(), "Thông tin", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            PrintUnavailableFoodList();
+        }
+
+        private void PrintByCursor_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string query = "SELECT * From fn_MaxPriceByCursor()";
+                SqlCommand command = new SqlCommand(query, conn);
+
+                DataTable data = new DataTable();
+
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                adapter.Fill(data);
+
+                dtgvFood.DataSource = data;
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show("Lỗi SQL: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+        }
+
+        private void dtgvFood_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }
