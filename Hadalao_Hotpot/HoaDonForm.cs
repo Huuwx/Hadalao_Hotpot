@@ -7,7 +7,7 @@ namespace Hadalao_Hotpot
 {
     public partial class HoaDonForm : Form
     {
-        string chuoiketnoi = "Data Source=DESKTOP-4UUFE49;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
+        string chuoiketnoi = "Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
 
         public HoaDonForm()
         {

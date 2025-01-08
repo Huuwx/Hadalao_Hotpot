@@ -22,7 +22,7 @@ namespace Hadalao_Hotpot
             Application.SetCompatibleTextRenderingDefault(false);
 
 
-            Application.Run(new Forms1());
+            Application.Run(new LoginForm());
 
         }
     }

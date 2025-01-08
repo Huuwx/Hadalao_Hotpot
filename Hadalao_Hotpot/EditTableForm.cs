@@ -22,7 +22,7 @@ namespace Hadalao_Hotpot
         public int datban = 0;
         public int thanhtoan = 0;
 
-        string chuoiketnoi = "Data Source=DESKTOP-4UUFE49;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
+        string chuoiketnoi = "Data Source=DESKTOP-B87EC4S;Initial Catalog=QUANLYLAU;TrustServerCertificate=true;Integrated Security=True";
         SqlConnection connection = null;
         SqlDataAdapter adapter = new SqlDataAdapter();
         SqlCommand cmd = new SqlCommand();
