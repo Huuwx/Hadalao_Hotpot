@@ -449,7 +449,7 @@ namespace Hadalao_Hotpot
                         // Mở kết nối với cơ sở dữ liệu
                         connection.Open();
 
-                        // Tạo SqlCommand để thực thi câu lệnh SQL
+                        // Tạo SqlCommand để thực thi câu lệnh SQL cập nhật trạng thái hóa đơn
                         SqlCommand command = new SqlCommand(query, connection);
                         command.Parameters.AddWithValue("@status", "Đã thanh toán");  // Trạng thái mới là "Đã thanh toán"
                         command.Parameters.AddWithValue("@billId", billId);  // Tham số billId
@@ -462,7 +462,19 @@ namespace Hadalao_Hotpot
                         {
                             MessageBox.Show("Hóa đơn đã được thanh toán!");
 
-                            // Tải lại dữ liệu sau khi cập nhật trạng thái
+                            // Gọi stored procedure để lấy tổng thu nhập
+                            SqlCommand cmdGetTongThuNhap = new SqlCommand("EXEC pr_GetTongThuNhap", connection);
+                            cmdGetTongThuNhap.CommandType = CommandType.Text;
+
+                            // Lấy kết quả trả về từ stored procedure
+                            object result = cmdGetTongThuNhap.ExecuteScalar(); // ExecuteScalar() sẽ trả về giá trị đầu tiên trong kết quả
+
+                            if (result != null)
+                            {
+                                decimal totalIncome = Convert.ToDecimal(result);
+                                textBoxTongThuNhap.Text = totalIncome.ToString("C"); // Cập nhật giá trị tổng thu nhập vào TextBox
+                            }
+
                             LoadBillDetails();
                         }
                         else
@@ -483,6 +495,8 @@ namespace Hadalao_Hotpot
                 MessageBox.Show("Vui lòng chọn một hóa đơn để thanh toán.");
             }
         }
+
+
 
         private void button4_Click(object sender, EventArgs e)
         {
