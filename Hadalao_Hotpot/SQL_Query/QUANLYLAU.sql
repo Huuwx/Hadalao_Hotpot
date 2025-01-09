@@ -1,15 +1,6 @@
 ﻿CREATE DATABASE QUANLYLAU
 USE QUANLYLAU
 
-CREATE TABLE NVQUAN
-(
-MANV VARCHAR(20) NOT NULL PRIMARY KEY,
-TENNV VARCHAR(20) NOT NULL,
-SDT VARCHAR(10) NOT NULL,
-TINHTRANG VARCHAR(20) NOT NULL, --NGHI || DI LAM--
-NAMSINH INT,
-)
-
 CREATE TABLE food
 (
     food_id INT PRIMARY KEY,
@@ -36,9 +27,16 @@ TENKH VARCHAR(20) NOT NULL,
 SDT VARCHAR(10) NOT NULL,
 TUOI INT,
 SOLAN INT,
-TINHTRANG NVARCHAR(200)  --KHACH QUEN || KHACH MOI
+TINHTRANG NVARCHAR(200),  --KHACH QUEN || KHACH MOI
+DIEM INT DEFAULT 0,
+Discount INT DEFAULT 0
 )
+
+ALTER TABLE KHACH ADD DIEM INT DEFAULT 0;
+ALTER TABLE KHACH ADD Discount INT DEFAULT 0;
 drop table KHACH
+
+select * from KHACH
 
 INSERT INTO NVQUAN
 VALUES 
@@ -124,7 +122,6 @@ BEGIN
     IF EXISTS (SELECT * FROM INSERTED WHERE food_price <= 0)
     BEGIN
         Print N'Giá món ăn không thể âm!';
-        --ROLLBACK TRANSACTION;
     END
 	ELSE
 	BEGIN
@@ -143,6 +140,8 @@ begin
 	insert into food select food_id, food_name, food_price, food_availability from deleted
 	where food_availability = 'Available'
 end
+
+select * from food
 
 drop trigger trg_CheckDelete
 --Function
@@ -209,16 +208,32 @@ drop proc pr_ThemMonAn
 
 --Them view hien thi mon an duoc ban nhieu nhat
 
-CREATE VIEW vw_FoodDetails
-AS
-SELECT food_id, food_name, food_price, food_availability FROM FOOD;
+CREATE VIEW vw_FoodDetails AS
+SELECT 
+    f.food_id, 
+    f.food_name, 
+    f.food_price, 
+    f.food_availability, 
+    COALESCE(SUM(BI.quantity), 0) AS So_luot_ban -- COALESCE: dể đảm bảo nếu không có dữ liệu bán thì giá trị trả về là 0
+FROM FOOD f
+LEFT JOIN bill_info BI ON BI.food_id = f.food_id
+GROUP BY f.food_id, f.food_name, f.food_price, f.food_availability;
 
 drop view vw_FoodDetails
 
 CREATE VIEW vw_AvailableFood
 AS
-SELECT food_id, food_name, food_price, food_availability FROM FOOD
+SELECT 
+    f.food_id, 
+    f.food_name, 
+    f.food_price, 
+    f.food_availability, 
+    COALESCE(SUM(BI.quantity), 0) AS So_luot_ban -- COALESCE: dể đảm bảo nếu không có dữ liệu bán thì giá trị trả về là 0
+FROM FOOD f
+LEFT JOIN bill_info BI ON BI.food_id = f.food_id
 Where food_availability = 'Available'
+GROUP BY f.food_id, f.food_name, f.food_price, f.food_availability;
+
 
 drop view vw_AvailableFood
 --Cursor
@@ -227,14 +242,7 @@ drop view vw_AvailableFood
 
 -- Tao trigger cap nhat lai id mon an cho food khi xoa
 
-create function fn_MaxPriceByCursor()
-RETURNS @ResultTable TABLE
-(
-	food_id int,
-    food_name NVARCHAR(100),
-    food_price DECIMAL(10, 2),
-	food_availability nvarchar(20)
-)
+create proc pr_MaxPriceByCursor
 as
 begin
 	DECLARE cur_MaxPrice CURSOR SCROLL FOR
@@ -257,13 +265,18 @@ begin
 
 	CLOSE cur_MaxPrice;
 	DEALLOCATE cur_MaxPrice;
-	INSERT INTO @ResultTable (food_id, food_name, food_price, food_availability)
-    select food_id, food_name, food_price, food_availability from food where food_price = @maxprice
-
-	return;
+    SELECT f.food_id, 
+    f.food_name, 
+    f.food_price, 
+    f.food_availability, 
+    COALESCE(SUM(BI.quantity), 0) AS So_luot_ban -- COALESCE: dể đảm bảo nếu không có dữ liệu bán thì giá trị trả về là 0
+	FROM FOOD f
+	LEFT JOIN bill_info BI ON BI.food_id = f.food_id
+	where food_price = @maxprice
+	GROUP BY f.food_id, f.food_name, f.food_price, f.food_availability; 
 end
 
-drop function fn_MaxPriceByCursor
+drop function pr_MaxPriceByCursor
 
 create trigger trg_UpdateIdAfterDelete
 on food
@@ -461,8 +474,6 @@ BEGIN
 END;
 
 --proc
-ALTER TABLE KHACH ADD DIEM INT DEFAULT 0;
-ALTER TABLE KHACH ADD Discount INT DEFAULT 0;
 select *from KHACH
 CREATE PROCEDURE dbo.UpdateCustomerPointsById
     @MAKH VARCHAR(20)  -- Thêm tham số để chỉ cập nhật khách hàng theo mã
