@@ -92,6 +92,11 @@ namespace Hadalao_Hotpot
                     MessageBox.Show("Dữ liệu không được để trống !", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
+                if(nbudPrice.Value <= 0)
+                {
+                    MessageBox.Show("Giá món ăn không được phép nhỏ hơn hoặc bằng 0!", "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
                 SqlCommand command = new SqlCommand(query, conn);
                 if (this.Text == "Chỉnh Sửa")
                 {
