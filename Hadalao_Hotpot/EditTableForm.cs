@@ -126,7 +126,6 @@ namespace Hadalao_Hotpot
 
                 // Bước 2: Kiểm tra xem đã có hóa đơn chưa thanh toán
                 int billId = GetCurrentBillId(); // Lấy bill_id hiện tại của bàn
-
                 if (billId == -1)
                 {
                     throw new Exception("Chưa có hóa đơn. Vui lòng tạo hóa đơn trước.");
@@ -135,8 +134,8 @@ namespace Hadalao_Hotpot
                 // Bước 3: Lấy quantity từ numericUpDown_food
                 int quantity = (int)numericUpDown_food.Value;
 
-                // Bước 4: Kiểm tra nếu món ăn đã có trong bill_info, nếu có thì cập nhật số lượng, nếu chưa thì thêm mới
-                string checkFoodInBillInfoQuery = "SELECT quantity FROM bill_info WHERE bill_id = @bill_id AND food_id = @food_id";
+                // Bước 4: Kiểm tra nếu món ăn đã có trong bill_info
+                string checkFoodInBillInfoQuery = "SELECT COUNT(*) FROM bill_info WHERE bill_id = @bill_id AND food_id = @food_id";
                 using (SqlConnection connection = new SqlConnection(chuoiketnoi))
                 {
                     connection.Open();
@@ -146,29 +145,17 @@ namespace Hadalao_Hotpot
                         cmd.Parameters.AddWithValue("@bill_id", billId);
                         cmd.Parameters.AddWithValue("@food_id", foodId);
 
-                        object result = cmd.ExecuteScalar();
-                        if (result != null)
+                        // Kiểm tra xem món ăn đã có trong bill_info chưa
+                        int count = (int)cmd.ExecuteScalar();
+                        if (count > 0)
                         {
-                            // Món ăn đã có trong bill_info, cập nhật số lượng
-                            int currentQuantity = Convert.ToInt32(result);
-                            int newQuantity = currentQuantity + quantity;
-
-                            string updateQuantityQuery = "UPDATE bill_info SET quantity = @newQuantity WHERE bill_id = @bill_id AND food_id = @food_id";
-                            using (SqlCommand updateCmd = new SqlCommand(updateQuantityQuery, connection))
-                            {
-                                updateCmd.Parameters.AddWithValue("@newQuantity", newQuantity);
-                                updateCmd.Parameters.AddWithValue("@bill_id", billId);
-                                updateCmd.Parameters.AddWithValue("@food_id", foodId);
-                                updateCmd.ExecuteNonQuery();
-                            }
-
-                            MessageBox.Show($"Cập nhật số lượng món ăn thành công. Số lượng mới: {newQuantity}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            // Nếu món ăn đã có trong bill_info, thông báo và không thêm nữa
+                            MessageBox.Show("Món ăn này đã có trong hóa đơn rồi.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
                         else
                         {
-                            // Món ăn chưa có trong bill_info, thêm mới
+                            // Món ăn chưa có trong bill_info, tiến hành thêm mới
                             string insertBillInfoQuery = "INSERT INTO bill_info (bill_id, food_id, quantity) VALUES (@bill_id, @food_id, @quantity)";
-
                             using (SqlCommand insertCmd = new SqlCommand(insertBillInfoQuery, connection))
                             {
                                 insertCmd.Parameters.AddWithValue("@bill_id", billId);  // Đảm bảo bill_id đã tồn tại trong bảng bill
@@ -177,19 +164,26 @@ namespace Hadalao_Hotpot
                                 insertCmd.ExecuteNonQuery();
                             }
 
+                            // Cập nhật tổng tiền sau khi thêm món ăn mới
+                            UpdateTotalForBill(billId);
+
                             MessageBox.Show($"Thêm món ăn vào hóa đơn thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            // Cập nhật lại DataGridView để hiển thị món ăn
+                            dgv.Rows.Add(comboBox_food.Text, numericUpDown_food.Value, int.Parse(textBox_price.Text) * numericUpDown_food.Value);
+
+                            // Cập nhật lại tổng tiền hiển thị trên giao diện
+                            UpdateTotalDisplay(billId);
                         }
                     }
                 }
-
-                // Sau khi thêm thành công, bạn có thể thêm vào DataGridView để hiển thị
-                dgv.Rows.Add(comboBox_food.Text, numericUpDown_food.Value, int.Parse(textBox_price.Text) * numericUpDown_food.Value);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
 
         // Phương thức lấy bill_id hiện tại của bàn
         private int GetCurrentBillId()
@@ -323,7 +317,7 @@ namespace Hadalao_Hotpot
                 }
 
                 // Bước 3: Kiểm tra nếu món ăn có trong bill_info
-                string checkFoodInBillInfoQuery = "SELECT quantity FROM bill_info WHERE bill_id = @bill_id AND food_id = @food_id";
+                string checkFoodInBillInfoQuery = "SELECT quantity, food_id FROM bill_info WHERE bill_id = @bill_id AND food_id = @food_id";
                 using (SqlConnection connection = new SqlConnection(chuoiketnoi))
                 {
                     connection.Open();
@@ -356,6 +350,12 @@ namespace Hadalao_Hotpot
                                     break;
                                 }
                             }
+
+                            // Bước 4: Cập nhật lại tổng tiền của hóa đơn
+                            UpdateTotalForBill(billId);
+
+                            // Cập nhật lại tổng tiền trên giao diện (textBox_total)
+                            UpdateTotalDisplay(billId);
                         }
                         else
                         {
@@ -371,6 +371,42 @@ namespace Hadalao_Hotpot
             }
         }
 
+        // Cập nhật tổng tiền của hóa đơn
+        private void UpdateTotalForBill(int billId)
+        {
+            string updateTotalQuery = @"
+        EXEC pr_UpdateBillTotal @bill_id";
+
+            using (SqlConnection connection = new SqlConnection(chuoiketnoi))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new SqlCommand(updateTotalQuery, connection))
+                {
+                    cmd.Parameters.AddWithValue("@bill_id", billId);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // Cập nhật hiển thị tổng tiền trên giao diện (textBox_total)
+        private void UpdateTotalDisplay(int billId)
+        {
+            string getTotalQuery = "SELECT total FROM bill WHERE bill_id = @bill_id";
+
+            using (SqlConnection connection = new SqlConnection(chuoiketnoi))
+            {
+                connection.Open();
+                using (SqlCommand cmd = new SqlCommand(getTotalQuery, connection))
+                {
+                    cmd.Parameters.AddWithValue("@bill_id", billId);
+                    object total = cmd.ExecuteScalar();
+                    if (total != null)
+                    {
+                        textBox_total.Text = Convert.ToDecimal(total).ToString("N2");
+                    }
+                }
+            }
+        }
 
 
         private void dgv_CellClick(object sender, DataGridViewCellEventArgs e)
@@ -404,7 +440,7 @@ namespace Hadalao_Hotpot
                 // Kiểm tra nếu chưa chọn món ăn
                 if (comboBox_food.Text.Length == 0)
                 {
-                    throw new Exception("Vui lòng chọn đồ ăn để chỉnh sửa");
+                    throw new Exception("Vui lòng chọn món ăn để chỉnh sửa");
                 }
 
                 // Bước 1: Lấy food_id từ tên món ăn đã chọn trong comboBox_food
@@ -453,24 +489,28 @@ namespace Hadalao_Hotpot
                             }
 
                             MessageBox.Show($"Sửa số lượng món ăn thành công. Số lượng mới: {newQuantity}", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                            // Sau khi sửa thành công, cập nhật lại DataGridView (nếu cần thiết)
+                            foreach (DataGridViewRow row in dgv.Rows)
+                            {
+                                if (row.Cells[0].Value.ToString() == comboBox_food.Text)
+                                {
+                                    row.Cells[1].Value = numericUpDown_food.Value;
+                                    row.Cells[2].Value = int.Parse(textBox_price.Text) * numericUpDown_food.Value;
+                                    break;
+                                }
+                            }
+
+                            // Cập nhật lại tổng tiền cho hóa đơn sau khi sửa số lượng
+                            UpdateTotalForBill(billId);
+
+                            // Cập nhật lại giá trị tổng tiền trên giao diện
+                            UpdateTotalDisplay(billId);
                         }
                         else
                         {
-                            // Món ăn chưa có trong bill_info, thông báo lỗi
                             MessageBox.Show("Món ăn này chưa có trong hóa đơn. Không thể sửa.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
-                    }
-                }
-
-                // Sau khi sửa thành công, bạn có thể cập nhật lại DataGridView (nếu cần thiết)
-                // Giả sử DataGridView đã có một dòng tương ứng, bạn sẽ cần tìm nó và cập nhật giá trị tương ứng:
-                foreach (DataGridViewRow row in dgv.Rows)
-                {
-                    if (row.Cells[0].Value.ToString() == comboBox_food.Text)
-                    {
-                        row.Cells[1].Value = numericUpDown_food.Value;
-                        row.Cells[2].Value = int.Parse(textBox_price.Text) * numericUpDown_food.Value;
-                        break;
                     }
                 }
             }
@@ -479,6 +519,9 @@ namespace Hadalao_Hotpot
                 MessageBox.Show(ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
+    
+
 
         private decimal GetFoodPrice(string foodName)
         {

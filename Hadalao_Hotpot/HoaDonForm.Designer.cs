@@ -127,7 +127,7 @@
             // button3
             // 
             this.button3.AutoSize = true;
-            this.button3.Location = new System.Drawing.Point(221, 281);
+            this.button3.Location = new System.Drawing.Point(234, 294);
             this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(174, 26);
@@ -139,7 +139,7 @@
             // button2
             // 
             this.button2.AutoSize = true;
-            this.button2.Location = new System.Drawing.Point(30, 281);
+            this.button2.Location = new System.Drawing.Point(54, 294);
             this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(163, 26);
@@ -188,7 +188,7 @@
             // 
             this.textBoxTongThuNhap.Font = new System.Drawing.Font("Segoe UI", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBoxTongThuNhap.Location = new System.Drawing.Point(457, 32);
-            this.textBoxTongThuNhap.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxTongThuNhap.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxTongThuNhap.Name = "textBoxTongThuNhap";
             this.textBoxTongThuNhap.ReadOnly = true;
             this.textBoxTongThuNhap.Size = new System.Drawing.Size(143, 35);
