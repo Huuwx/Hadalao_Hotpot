@@ -133,7 +133,7 @@ BEGIN
 	ELSE
 	BEGIN
 		INSERT INTO FOOD (food_id, food_name, food_price, food_availability)
-		SELECT food_id, food_name, food_price, 'Available' from inserted
+		SELECT food_id, food_name, food_price, food_availability from inserted
 	END
 END;
 
@@ -167,8 +167,16 @@ drop function fn_TotalFoodByAvailability
 Create function fn_UnavailableFood()
 Returns table
 as
-	return (SELECT food_id, food_name, food_price, food_availability FROM FOOD
-			Where food_availability = 'Unavailable')
+	return (SELECT 
+    f.food_id, 
+    f.food_name, 
+    f.food_price, 
+    f.food_availability, 
+    COALESCE(SUM(BI.quantity), 0) AS So_luot_ban 
+	FROM FOOD f
+	LEFT JOIN bill_info BI ON BI.food_id = f.food_id
+	Where food_availability = 'Unavailable'
+	GROUP BY f.food_id, f.food_name, f.food_price, f.food_availability)
 
 drop function fn_UnavailableFood
 
