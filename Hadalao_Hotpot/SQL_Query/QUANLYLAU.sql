@@ -51,10 +51,10 @@ VALUES
 ('NV009','Huong9','0383682959','NGHI LAM',2002);
 select *from KHACH
 
-CREATE TABLE bill
+create TABLE bill
 (
     bill_id INT IDENTITY(1, 1) PRIMARY KEY,
-    payment_time DATE,
+    create_time DATE,
     MABAN varchar(20) FOREIGN KEY REFERENCES BAN(MABAN),
     MAKH VARCHAR(20) FOREIGN KEY REFERENCES KHACH(MAKH),
     Total DECIMAL(10,2)	,
@@ -598,23 +598,15 @@ BEGIN
         FROM bill_info
         INNER JOIN food ON food.food_id = bill_info.food_id
         WHERE bill_info.bill_id = @bill_id;
-
     OPEN bill_cursor;
-
-    -- Lấy từng dòng dữ liệu và tính tổng tiền
     FETCH NEXT FROM bill_cursor INTO @food_price, @quantity;
-
     WHILE @@FETCH_STATUS = 0
     BEGIN
         SET @total = @total + (@food_price * @quantity);
         FETCH NEXT FROM bill_cursor INTO @food_price, @quantity;
     END
-
-
     CLOSE bill_cursor;
     DEALLOCATE bill_cursor;
-
-
     RETURN @total;
 END;
 
@@ -709,7 +701,7 @@ begin
 	if (select quantity from inserted ) < 1
 	begin
 	rollback transaction
-	print'khong hop le'
+	print N'số lượng không hợp lệ'
 	end
 	end
 drop trigger trig_quantity
@@ -725,16 +717,13 @@ AS
 BEGIN
     DECLARE @bill_id INT;
     SELECT @bill_id = bill_id FROM DELETED;
-
-    -- Kiểm tra nếu hóa đơn đã được thanh toán, không cho phép xóa
     IF (SELECT bill_status FROM DELETED) = N'Đã thanh toán'
     BEGIN
-        PRINT 'Không thể xóa hóa đơn đã thanh toán';
-        ROLLBACK TRANSACTION; -- Ngừng thao tác nếu hóa đơn đã thanh toán
+        PRINT N'Không thể xóa hóa đơn đã thanh toán';
+        ROLLBACK TRANSACTION;
     END
     ELSE
     BEGIN
-        -- Xóa dữ liệu liên quan trong bảng bill_info và bill
         DELETE FROM bill_info WHERE bill_id = @bill_id;
         DELETE FROM bill WHERE bill_id = @bill_id;
     END
@@ -747,6 +736,9 @@ select *from bill
 	select *from bill
 
 	drop trigger trig_deletebill
+
+
+
 	create trigger trig_bill_status
 	on bill
 	for insert
@@ -762,22 +754,12 @@ select *from bill
 	select *from bill
 drop trigger trg_UpdateTotal
 
-CREATE TRIGGER trg_UpdateTongThuNhap
-ON bill
-AFTER INSERT, DELETE, UPDATE
-AS
-BEGIN
-    DECLARE @tongThuNhap DECIMAL(10, 2);
-    SET @tongThuNhap = dbo.fn_TongThuNhap();
-END;
-
-
 -- Chèn vào bảng NVQUAN
 INSERT INTO NVQUAN (MANV, TENNV, SDT, TINHTRANG, NAMSINH)
 VALUES 
-('NV001', 'Nguyễn Văn A', '0123456789', 'DI LAM', 1990),
-('NV002', 'Trần Thị B', '0987654321', 'NGHI', 1992),
-('NV003', 'Lê Văn C', '0912345678', 'DI LAM', 1991);
+('NV001', N'Nguyễn Văn A', '0123456789', 'DI LAM', 1990),
+('NV002', N'Trần Thị B', '0987654321', 'NGHI', 1992),
+('NV003', N'Lê Văn C', '0912345678', 'DI LAM', 1991);
 
 -- Chèn vào bảng KHACH
 INSERT INTO KHACH (MAKH, TENKH, SDT, TUOI)
@@ -821,14 +803,14 @@ VALUES
 DELETE FROM BAN;
 
 -- Chèn vào bảng bill
-INSERT INTO bill (payment_time, MABAN, MAKH , bill_status)
+INSERT INTO bill (create_time, MABAN, MAKH , bill_status)
 VALUES 
 (GETDATE(), 'B1', 'KH001' ,N'Đã thanh toán'),
 (GETDATE(), 'B2', 'KH002',N'Đã thanh toán'),
 (GETDATE(), 'B3', 'KH003',N'Đã thanh toán');
 drop table bill
 use QUANLYLAU
-INSERT INTO bill (payment_time, MABAN, MAKH)
+INSERT INTO bill (create_time, MABAN, MAKH)
 VALUES 
 ('2020-01-01', 'B2', 'KH002' );
 
@@ -844,7 +826,7 @@ VALUES
 (3, 6, 2),  -- Bill 3: 2 Steaks
 (3, 7, 1);  -- Bill 3: 1 Sushi
 
-INSERT INTO bill (payment_time, MABAN, MAKH , bill_status)
+INSERT INTO bill (create_time, MABAN, MAKH , bill_status)
 VALUES 
 (GETDATE(), 'B16', 'KH001' ,N'Đã thanh toán')
 select *from bill
