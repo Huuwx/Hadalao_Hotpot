@@ -375,30 +375,30 @@ namespace Hadalao_Hotpot
                 // Lấy mã khách hàng từ giao diện (giả sử có TextBox hoặc ComboBox)
                 string maKH = txtMAKH.Text.Trim(); // Thay txtMaKH bằng tên của điều khiển nhập mã khách hàng
 
-                // Câu lệnh SQL để cập nhật cột Discount theo mã khách hàng
+                // Câu lệnh SQL để cập nhật Discount, DIEM và reset SOLAN về 0
                 string sqlUpdateDiscount = @"
-        UPDATE KHACH
-SET 
-  Discount = 
-    CASE 
-      WHEN DIEM >= 1000 THEN 100
-      WHEN DIEM >= 400 THEN 40
-      WHEN DIEM >= 300 THEN 30
-      WHEN DIEM >= 200 THEN 20
-      WHEN DIEM >= 100 THEN 10
-      ELSE Discount
-    END,
-  DIEM = 
-    CASE 
-      WHEN DIEM >= 1000 THEN DIEM - 1000
-      WHEN DIEM >= 400 THEN DIEM - 400
-      WHEN DIEM >= 300 THEN DIEM - 300
-      WHEN DIEM >= 200 THEN DIEM - 200
-      WHEN DIEM >= 100 THEN DIEM - 100
-      ELSE DIEM
-    END
-WHERE DIEM >= 100 AND MAKH = @MAKH";
-
+                        UPDATE KHACH
+                SET 
+                  Discount = 
+                    CASE 
+                      WHEN DIEM >= 1000 THEN 100
+                      WHEN DIEM >= 400 THEN 40
+                      WHEN DIEM >= 300 THEN 30
+                      WHEN DIEM >= 200 THEN 20
+                      WHEN DIEM >= 100 THEN 10
+                      ELSE Discount
+                    END,
+                  DIEM = 
+                    CASE 
+                      WHEN DIEM >= 1000 THEN DIEM - 1000
+                      WHEN DIEM >= 400 THEN DIEM - 400
+                      WHEN DIEM >= 300 THEN DIEM - 300
+                      WHEN DIEM >= 200 THEN DIEM - 200
+                      WHEN DIEM >= 100 THEN DIEM - 100
+                      ELSE DIEM
+                    END,
+                  SOLAN = 0
+                WHERE DIEM >= 100 AND MAKH = @MAKH";
 
                 // Thực hiện câu lệnh SQL
                 using (SqlCommand cmd = new SqlCommand(sqlUpdateDiscount, conn))
