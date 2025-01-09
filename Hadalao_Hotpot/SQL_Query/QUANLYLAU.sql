@@ -36,19 +36,6 @@ ALTER TABLE KHACH ADD DIEM INT DEFAULT 0;
 ALTER TABLE KHACH ADD Discount INT DEFAULT 0;
 drop table KHACH
 
-select * from KHACH
-
-INSERT INTO NVQUAN
-VALUES 
-('NV001','Huong1','0383682951','DI LAM',2003),
-('NV002','Huong2','0383682952','NGHI LAM',2002),
-('NV003','Huong3','0383682953','DI LAM',2006),
-('NV004','Huong4','0383682954','NGHI LAM',2001),
-('NV005','Huong5','0383682955','DI LAM',2000),
-('NV006','Huong6','0383682956','DI LAM',2002),
-('NV007','Huong7','0383682957','NGHI LAM',2004),
-('NV008','Huong8','0383682958','DI LAM',2001),
-('NV009','Huong9','0383682959','NGHI LAM',2002);
 select *from KHACH
 
 create TABLE bill
@@ -90,19 +77,39 @@ INSERT INTO bill (payment_time, MABAN, customer_name,total) VALUES (GETDATE(), @
 
 INSERT INTO food (food_id, food_name, food_price, food_availability)
 VALUES 
-(11, 'Burger', 5, 'Available'),
-(12, 'Salad', 8, 'Available'),
-(13, 'Pasta', 12, 'Available'),
-(14, 'Sandwich', 6, 'Available'),
-(15, 'Soup', 4, 'Available'),
-(16, 'Steak', 15, 'Available'),
-(17, 'Sushi', 18, 'Available'),	
-(18, 'Fries', 3, 'Available'),
-(19, 'Ice Cream', 4, 'Available');
+(1, 'Burger', 5, 'Available'),
+(2, 'Salad', 8, 'Available'),
+(3, 'Pasta', 12, 'Available'),
+(4, 'Sandwich', 6, 'Available'),
+(5, 'Soup', 4, 'Available'),
+(6, 'Steak', 15, 'Available'),
+(7, 'Sushi', 18, 'Available'),	
+(8, 'Fries', 3, 'Available'),
+(9, 'Ice Cream', 4, 'Available');
 
 drop table food
 
 select * from bill_info
+
+--Phân Quyền
+--Phân Quyền cho QuanLy
+grant select on food to QuanLy
+grant insert, delete, update on food to QuanLy
+grant select on bill to QuanLy
+grant insert, delete, update on bill to QuanLy
+grant select on bill_info to QuanLy
+grant insert, delete, update on bill_info to QuanLy
+
+
+-- Phân Quyền cho NhanVien
+grant select on bill to NhanVien
+grant insert, delete, update on bill to NhanVien
+grant select on bill_info to NhanVien
+grant insert, delete, update on bill_info to NhanVien
+grant select on KHACH to NhanVien
+grant insert, delete, update on KHACH to NhanVien
+grant select on BAN to NhanVien
+grant insert, delete, update on BAN to NhanVien
 
 --CHU MẠNH HỮU - 2251172368
 
